@@ -9,6 +9,7 @@ import {
   Image,
   FlatList,
   Animated,
+  Alert,
 } from "react-native";
 import { Audio } from "expo-av";
 
@@ -19,8 +20,6 @@ import Slider from "@react-native-community/slider";
 const { width, height } = Dimensions.get("window");
 
 const PlayerMusic = () => {
-  // let interval;
-
   const songs = [
     {
       id: 1,
@@ -28,7 +27,7 @@ const PlayerMusic = () => {
       artist: "Bobby Richards",
       artwork: require("../../../assets/images/img1.jpg"),
       url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2F19th%20Floor%20-%20Bobby%20Richards.mp3?alt=media&token=4fe09d01-c064-440e-9fa7-e02005ebd79f",
-      song: require("../../../assets/audio/19thFloor-BobbyRichards.mp3"),
+      song: require("../../../assets/audio/BIGBANG-(SOBER)MV.mp3"),
     },
     {
       id: 2,
@@ -36,7 +35,7 @@ const PlayerMusic = () => {
       artist: "josh pan",
       artwork: require("../../../assets/images/img2.jpg"),
       url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FAwful%20-%20josh%20pan.mp3?alt=media&token=5b174d4c-be09-417c-9fb8-b384f3ce0ec2",
-      song: require("../../../assets/audio/Awful-joshpan.mp3"),
+      song: require("../../../assets/audio/BIGBANG-BADBOYMV.mp3"),
     },
     {
       id: 3,
@@ -44,7 +43,7 @@ const PlayerMusic = () => {
       artist: "Godmode",
       artwork: require("../../../assets/images/img3.jpg"),
       url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FSomething%20is%20Going%20On%20-%20Godmode.mp3?alt=media&token=ecf0d5c5-bc93-48c3-9046-077638d12cfd",
-      song: require("../../../assets/audio/SomethingisGoingOn-Godmode.mp3"),
+      song: require("../../../assets/audio/BIGBANG-TONIGHTMV.mp3"),
     },
     {
       id: 4,
@@ -52,7 +51,7 @@ const PlayerMusic = () => {
       artist: "RAGE",
       artwork: require("../../../assets/images/img4.jpg"),
       url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FBook%20The%20Rental%20Wit%20It%20-%20RAGE.mp3?alt=media&token=6f76a691-fd9c-4057-ac0a-0e39104e865e",
-      song: require("../../../assets/audio/BookTheRentalWitIt-RAGE.mp3"),
+      song: require("../../../assets/audio/BIGBANG-LOVESONGMV.mp3"),
     },
     {
       id: 5,
@@ -60,7 +59,7 @@ const PlayerMusic = () => {
       artist: "Huma-Huma",
       artwork: require("../../../assets/images/img5.jpg"),
       url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FCrimson%20Fly%20-%20Huma-Huma.mp3?alt=media&token=b2d30b27-286e-4d7d-82ad-1bdfa76a4058",
-      song: require("../../../assets/audio/CrimsonFly-Huma-Huma.mp3"),
+      song: require("../../../assets/audio/tacudicungnhau.mp3"),
     },
     {
       id: 6,
@@ -76,15 +75,14 @@ const PlayerMusic = () => {
   const [isPlaying, setPlaying] = useState(false);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [sound, setSound] = useState();
-  const songSlider = useRef(null);
-  const [duration, setDuration] = useState();
-  const [position, setPosition] = useState();
+  const [duration, setDuration] = useState(0);
+  const [position, setPosition] = useState(0);
+  const [isSliding, setSliding] = useState(false);
+  const [isBackSong, setBackSong] = useState(true);
+  const [isNextSong, setNextSong] = useState(true);
 
   async function createSound(index, callback) {
-    const { sound } = await Audio.Sound.createAsync(
-      songs[index].song
-      // onPlaybackStatusUpdate
-    );
+    const { sound } = await Audio.Sound.createAsync(songs[index].song);
     setSound(sound);
 
     if (typeof callback == "function") {
@@ -95,11 +93,6 @@ const PlayerMusic = () => {
   const onPauseSound = async () => {
     await sound.pauseAsync();
   };
-
-  // const onPlaybackStatusUpdate = (status) => {
-  //   setDuration(status.durationMillis);
-  //   setPosition(status.positionMillis);
-  // };
 
   useEffect(() => {
     scrollX.addListener(({ value }) => {
@@ -112,6 +105,9 @@ const PlayerMusic = () => {
   }, []);
 
   const onHandlerNext = () => {
+    if (songIndex >= songs.length - 1) {
+      return;
+    }
     if (sound) {
       sound.unloadAsync();
     }
@@ -121,12 +117,12 @@ const PlayerMusic = () => {
       newSound.playAsync();
     });
 
-    songSlider.current.scrollToOffset({
-      offset: (songIndex + 1) * width,
-    });
     setPlaying(true);
   };
   const onHandlerBack = () => {
+    if (songIndex <= 0) {
+      return;
+    }
     if (sound) {
       sound.unloadAsync();
     }
@@ -135,9 +131,7 @@ const PlayerMusic = () => {
     createSound(songIndex - 1, (newSound) => {
       newSound.playAsync();
     });
-    songSlider.current.scrollToOffset({
-      offset: (songIndex - 1) * width,
-    });
+
     setPlaying(true);
   };
 
@@ -158,15 +152,13 @@ const PlayerMusic = () => {
   };
 
   useEffect(() => {
-    if (sound && isPlaying ) {
+    if (sound && isPlaying && !isSliding) {
       let interval = setInterval(() => {
         sound
           .getStatusAsync()
           .then(function (result) {
             setDuration(result.durationMillis);
-            console.log("duration : ", duration);
             setPosition(result.positionMillis);
-            console.log("result : ", result);
           })
           .catch((error) => {
             console.error(error);
@@ -177,43 +169,44 @@ const PlayerMusic = () => {
         interval = 0;
       };
     }
-  }, [sound, isPlaying]);
+  }, [sound, isPlaying, isSliding]);
 
-  const renderSongs = ({ item }) => {
-    return (
-      <Animated.View style={styles.mainImageWrapper}>
-        <View style={[styles.imageWrapper, styles.elevation]}>
-          <Image style={styles.musicImage} source={item.artwork} />
-        </View>
-      </Animated.View>
-    );
+  const gotoPosition = (pos) => {
+    const checkPlaying = isPlaying;
+
+    if (isPlaying) {
+      setPlaying(false);
+    }
+
+    setPosition(pos);
+    if (checkPlaying) {
+      sound.playFromPositionAsync(pos);
+      setPlaying(true);
+    } else {
+      sound.setPositionAsync(pos);
+    }
+    setSliding(false);
   };
+
+  // converNumber
+  function convertSeconds(seconds) {
+    var convert = function (x) {
+      return x < 10 ? "0" + x : x;
+    };
+    return convert(parseInt((seconds / 60) % 60)) + ":" + convert(seconds % 60);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.maincontainer}>
-        {/* image */}
-        <Animated.FlatList
-          ref={songSlider}
-          data={songs}
-          renderItem={renderSongs}
-          keyExtractor={(item) => item.id}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          scrollEventThrottle={16}
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {
-                  contentOffset: { x: scrollX },
-                },
-              },
-            ],
-            { useNativeDriver: true }
-          )}
-        />
-
+        <Animated.View style={styles.mainImageWrapper}>
+          <View style={[styles.imageWrapper, styles.elevation]}>
+            <Image
+              style={styles.musicImage}
+              source={songs[songIndex].artwork}
+            />
+          </View>
+        </Animated.View>
         {/* Song Content */}
         <View>
           <Text style={[styles.songContent, styles.songTitle]}>
@@ -228,29 +221,42 @@ const PlayerMusic = () => {
         <View>
           <Slider
             style={styles.progressBar}
-            value={0}
+            value={position}
             minimumValue={0}
-            maximumValue={100}
+            maximumValue={duration}
             thumbTintColor="#FFD369"
             minimumTrackTintColor="#FFD369"
             maximumTrackTintColor="#fff"
-            onSlidingComplete={() => {}}
+            onSlidingComplete={gotoPosition}
+            onSlidingStart={() => setSliding(true)}
           />
         </View>
 
         {/* music progress durations */}
         <View style={styles.progressLevelDuration}>
-          <Text style={styles.progressLabelText}>00:00</Text>
-          <Text style={styles.progressLabelText}>00:00</Text>
+          <Text style={styles.progressLabelText}>
+            {convertSeconds((position / 1000).toFixed(0))}
+          </Text>
+          <Text style={styles.progressLabelText}>
+            {convertSeconds((duration / 1000).toFixed(0))}
+          </Text>
         </View>
         {/* music controls */}
         <View style={styles.musicControlsContainer}>
           <TouchableOpacity onPress={() => {}}>
             <Ionicons name="ios-add-circle-sharp" size={35} color="#FFD369" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onHandlerBack}>
-            <Ionicons name="play-skip-back-outline" size={35} color="#FFD369" />
-          </TouchableOpacity>
+          {songIndex <= 0 ? (
+            <Ionicons name="play-skip-back-outline" size={35} color="#eee" />
+          ) : (
+            <TouchableOpacity onPress={onHandlerBack}>
+              <Ionicons
+                name="play-skip-back-outline"
+                size={35}
+                color="#FFD369"
+              />
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity onPress={onPlaySound}>
             <Ionicons
@@ -259,14 +265,18 @@ const PlayerMusic = () => {
               color="#FFD369"
             />
           </TouchableOpacity>
+          {songIndex >= songs.length - 1 ? (
+            <Ionicons name="play-skip-forward-outline" size={35} color="#eee" />
+          ) : (
+            <TouchableOpacity onPress={onHandlerNext}>
+              <Ionicons
+                name="play-skip-forward-outline"
+                size={35}
+                color="#FFD369"
+              />
+            </TouchableOpacity>
+          )}
 
-          <TouchableOpacity onPress={onHandlerNext}>
-            <Ionicons
-              name="play-skip-forward-outline"
-              size={35}
-              color="#FFD369"
-            />
-          </TouchableOpacity>
           <TouchableOpacity onPress={() => {}}>
             <MaterialIcons name="horizontal-rule" size={35} color="#FFD369" />
           </TouchableOpacity>
@@ -324,6 +334,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 25,
+    marginBottom: 150,
   },
   imageWrapper: {
     width: 300,

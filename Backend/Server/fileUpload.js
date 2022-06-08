@@ -8,8 +8,18 @@ var getpath = require("path");
 const fs = require("fs");
 
 
-const fileUpload=async (files)=>{
-    const filePath='storage/anh/'+uuidv4()+getpath.extname(files.name)
+const fileUploadImage=async (files)=>{
+    const filePath='storage/image/'+uuidv4()+getpath.extname(files.name)
+   await  files.mv(filePath, function(err) {
+        if (err)
+          return console.log(err);
+    
+      });
+      return filePath
+
+}
+const fileUploadAudio=async (files)=>{
+    const filePath='storage/audio/'+uuidv4()+getpath.extname(files.name)
    await  files.mv(filePath, function(err) {
         if (err)
           return console.log(err);
@@ -19,5 +29,6 @@ const fileUpload=async (files)=>{
 
 }
 module.exports = {
-    fileUpload
+    fileUploadImage,
+    fileUploadAudio
 };

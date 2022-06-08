@@ -69,9 +69,12 @@ app.use(fileUpload({
 /*end server*/
 
 /*router*/
-const applicantRouter = require('./Router/SongsRouter')
+const songRouter = require('./Router/SongsRouter')
+const upFileRouter = require('./Router/UpFileRouter')
 //create router with url api/teacher+ url in router file
-app.use('/api/song', applicantRouter)
+app.use('/api/song', songRouter)
+app.use('/api/upfile', upFileRouter)
+
 server.server.listen(process.env.PORT||8000, () => {
 
     console.log("server and websocket listening on port 8000!");

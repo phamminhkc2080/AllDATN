@@ -20,7 +20,7 @@ const addSong = async (req, res) => {
 }
 
 const upload=async(req,res)=>{
-   const path=await file.fileUpload(req.files.o)
+   const path=await file.fileUpload(req.files.image)
     res.status(200).send(path)
 }
 
