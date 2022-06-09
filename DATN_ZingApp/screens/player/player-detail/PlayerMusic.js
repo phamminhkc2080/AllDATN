@@ -15,6 +15,8 @@ import { Audio } from "expo-av";
 
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 
 const { width, height } = Dimensions.get("window");
@@ -78,8 +80,7 @@ const PlayerMusic = () => {
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
   const [isSliding, setSliding] = useState(false);
-  const [isBackSong, setBackSong] = useState(true);
-  const [isNextSong, setNextSong] = useState(true);
+  const [isRepeat, setRepeat] = useState(true);
 
   async function createSound(index, callback) {
     const { sound } = await Audio.Sound.createAsync(songs[index].song);
@@ -95,13 +96,11 @@ const PlayerMusic = () => {
   };
 
   useEffect(() => {
-    scrollX.addListener(({ value }) => {
-      const index = Math.round(value / width);
-      setSongIndex(index);
+    createSound(songIndex, (newSound) => {
+      newSound
+        .getStatusAsync()
+        .then((result) => setDuration(result.durationMillis));
     });
-    return () => {
-      scrollX.removeAllListeners();
-    };
   }, []);
 
   const onHandlerNext = () => {
@@ -119,6 +118,7 @@ const PlayerMusic = () => {
 
     setPlaying(true);
   };
+
   const onHandlerBack = () => {
     if (songIndex <= 0) {
       return;
@@ -154,15 +154,20 @@ const PlayerMusic = () => {
   useEffect(() => {
     if (sound && isPlaying && !isSliding) {
       let interval = setInterval(() => {
-        sound
-          .getStatusAsync()
-          .then(function (result) {
-            setDuration(result.durationMillis);
-            setPosition(result.positionMillis);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        sound.setOnPlaybackStatusUpdate((result) => {
+          setDuration(result.durationMillis);
+          setPosition(result.positionMillis);
+          if (result.didJustFinish) {
+            
+            setPlaying(false);
+            setSongIndex(songIndex + 1);
+            setPosition(0);
+            createSound(songIndex + 1, (newSound) => {
+              newSound.playAsync();
+            });
+            setPlaying(true);
+          }
+        });
       }, 500);
       return () => {
         clearInterval(interval);
@@ -179,6 +184,7 @@ const PlayerMusic = () => {
     }
 
     setPosition(pos);
+
     if (checkPlaying) {
       sound.playFromPositionAsync(pos);
       setPlaying(true);
@@ -195,6 +201,12 @@ const PlayerMusic = () => {
     };
     return convert(parseInt((seconds / 60) % 60)) + ":" + convert(seconds % 60);
   }
+
+  const onHandlerRepeat = () => {
+    setRepeat((repeat) => !repeat);
+    console.log("repeat : ", isRepeat);
+    sound.setIsLoopingAsync(isRepeat);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -215,6 +227,26 @@ const PlayerMusic = () => {
           <Text style={[styles.songContent, styles.songArtist]}>
             {songs[songIndex].artist}
           </Text>
+        </View>
+
+        <View style={styles.bottomContainer}>
+          <View style={styles.bottomIconWrapper}>
+            <TouchableOpacity onPress={() => {}}>
+              <Ionicons name="heart-outline" size={30} color="#888888" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {}}>
+              <Ionicons name="repeat" size={30} color="#888888" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {}}>
+              <Ionicons name="share-outline" size={30} color="#888888" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {}}>
+              <Ionicons name="ellipsis-horizontal" size={30} color="#888888" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* slider */}
@@ -243,9 +275,10 @@ const PlayerMusic = () => {
         </View>
         {/* music controls */}
         <View style={styles.musicControlsContainer}>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="ios-add-circle-sharp" size={35} color="#FFD369" />
+          <TouchableOpacity>
+            <Ionicons name="shuffle-outline" size={35} color="#FFD369" />
           </TouchableOpacity>
+
           {songIndex <= 0 ? (
             <Ionicons name="play-skip-back-outline" size={35} color="#eee" />
           ) : (
@@ -276,28 +309,12 @@ const PlayerMusic = () => {
               />
             </TouchableOpacity>
           )}
-
-          <TouchableOpacity onPress={() => {}}>
-            <MaterialIcons name="horizontal-rule" size={35} color="#FFD369" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.bottomContainer}>
-        <View style={styles.bottomIconWrapper}>
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="heart-outline" size={30} color="#888888" />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="repeat" size={30} color="#888888" />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="share-outline" size={30} color="#888888" />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <Ionicons name="ellipsis-horizontal" size={30} color="#888888" />
+          <TouchableOpacity onPress={onHandlerRepeat}>
+            <MaterialIcons
+              name={isRepeat ? "repeat" : "repeat-one"}
+              size={30}
+              color="#FFD369"
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -320,9 +337,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     width: width,
     alignItems: "center",
-    paddingVertical: 15,
-    borderTopColor: "#393E46",
-    borderWidth: 1,
+    marginTop: 40,
   },
   bottomIconWrapper: {
     flexDirection: "row",
@@ -373,7 +388,11 @@ const styles = StyleSheet.create({
   progressBar: {
     width: 350,
     height: 40,
-    marginTop: 20,
+    flexDirection: "row",
+  },
+  progressBarVolume: {
+    width: 120,
+    height: 40,
     flexDirection: "row",
   },
   progressLevelDuration: {
@@ -390,7 +409,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "60%",
+    width: "65%",
     marginTop: 10,
   },
 });

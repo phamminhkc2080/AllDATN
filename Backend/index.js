@@ -70,10 +70,15 @@ app.use(fileUpload({
 
 /*router*/
 const songRouter = require('./Router/SongsRouter')
+const categorisRouter = require('./Router/CategorisRouter')
 const upFileRouter = require('./Router/UpFileRouter')
+const artistRouter = require('./Router/ArtistsRouter')
 //create router with url api/teacher+ url in router file
-app.use('/api/song', songRouter)
+app.use('/api/songs', songRouter)
 app.use('/api/upfile', upFileRouter)
+app.use('/api/categories', categorisRouter)
+app.use('/api/artists', artistRouter)
+
 
 server.server.listen(process.env.PORT||8000, () => {
 

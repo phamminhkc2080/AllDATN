@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Image, ScrollView } from "react-native";
+import { request } from "../utils/Request";
 import HeaderHome from "./header/HeaderHome";
 import PopularSongs from "./popular-songs/PopularSongs";
 
@@ -41,6 +42,14 @@ export default function HomeScreen({ navigation }) {
       img: require("../../assets/images/s5.jpeg"),
     },
   ];
+  const [dataTopSongs, setDataTopSongs] = useState([]);
+  useEffect(() => {
+    request
+      .get("songs/getTopSong")
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  },[]);
+
   const popularSongList = [
     {
       id: "01",

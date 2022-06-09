@@ -6,6 +6,8 @@ const applicantController = require("../src/SongsController")
     //handles post request with url /api/login
 router.get('/getallsongs', applicantController.getAllSongs);
 router.post('/addSong',applicantController.addSong)
+router.get('/getTopSong',applicantController.getTopSongs)
+router.get('/getRecommended',applicantController.getRecommended)
 router.post('/uploadFile', applicantController.upload);
 
 
