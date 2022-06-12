@@ -5,6 +5,7 @@ var router = express.Router();
 const applicantController = require("../src/CategorisController")
     //handles post request with url /api/login
 router.get('/getTopCategoris', applicantController.getTopCategoris);
+router.get('/getCategorisTrending', applicantController.getCategorisTrending);
 
 
 

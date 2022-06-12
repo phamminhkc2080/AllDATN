@@ -6,7 +6,7 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 
@@ -22,16 +22,15 @@ export default function HeaderHome(props) {
   return (
     <SafeAreaView>
       <View style={styles.constainer}>
-
-          <TouchableOpacity onPress={gotoFrofile}>
-            <Image
-              resizeMode="cover"
-              style={styles.imageUser}
-              source={require("../../../assets/images/b1.jpg")}
-            />
-          </TouchableOpacity >
-          <TouchableWithoutFeedback onPress={gotoResultSearch}>
-          <View style={styles.searchSection} >
+        <TouchableOpacity onPress={gotoFrofile}>
+          <Image
+            resizeMode="cover"
+            style={styles.imageUser}
+            source={require("../../../assets/images/b1.jpg")}
+          />
+        </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={gotoResultSearch}>
+          <View style={styles.searchSection}>
             <Ionicons
               style={styles.searchIcon}
               name="search"
@@ -45,9 +44,9 @@ export default function HeaderHome(props) {
               underlineColorAndroid="transparent"
             />
           </View>
-          </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
 
-          <Feather name="settings" size={30} color="black" />
+        <Feather name="settings" size={30} color="black" />
       </View>
     </SafeAreaView>
   );
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 5,
     paddingLeft: 12,
-    paddingRight:20
+    paddingRight: 20,
   },
   searchSection: {
     height: 40,
@@ -69,8 +68,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: "row",
     backgroundColor: "#e8e8e8",
-    marginLeft: '2.5%',
-    marginRight:'2.5%'
+    marginLeft: "2.5%",
+    marginRight: "2.5%",
   },
   searchIcon: {
     width: 40,
@@ -83,10 +82,10 @@ const styles = StyleSheet.create({
     width: "70%",
     color: "#000000",
   },
- 
+
   imageUser: {
     width: 32,
     height: 32,
     borderRadius: 20,
-  }
+  },
 });

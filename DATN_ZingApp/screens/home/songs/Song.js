@@ -13,9 +13,12 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Surface } from "react-native-paper";
 
+
 const { width, height } = Dimensions.get("window");
 
 export function Song(props) {
+  console.log("dataSong : ", props.item);
+
   const [modalVisible, setModalVisible] = useState(false);
   const playSong = (item) => {
     props.navigation.navigate("PlayerMusic");
@@ -29,10 +32,12 @@ export function Song(props) {
   const closeModal = () => {
     setModalVisible(false);
   };
-  let itemPro = props.data;
+  let itemPro = props.item;
+
   return (
     <View>
-      <Modal
+        <Text>{props.item}</Text>
+      {/* <Modal
         transparent={true}
         onRequestClose={() => closeModal()}
         visible={modalVisible}
@@ -95,56 +100,7 @@ export function Song(props) {
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableWithoutFeedback>
-    </View>
-  );
-}
-
-export default function Songs(props) {
-  let songs = [
-    {
-      title: "Believer",
-      subTitle: "Imagine Dragons",
-      duration: 201.6,
-      img: require("../../../assets/images/s1.jpg"),
-    },
-    {
-      title: "Hall Of Fame",
-      subTitle: "The Script",
-      duration: 201.6,
-      img: require("../../../assets/images/s2.jpg"),
-    },
-    {
-      title: "It's My Life",
-      subTitle: "Dr. Alban",
-      duration: 201.6,
-      img: require("../../../assets/images/s3.jpg"),
-    },
-    {
-      title: "Not Afraid",
-      subTitle: "Eminem",
-      duration: 201.6,
-      img: require("../../../assets/images/s4.jpg"),
-    },
-    {
-      title: "I Will Survive",
-      subTitle: "Gloria Gaynor",
-      duration: 201.6,
-      img: require("../../../assets/images/s5.jpeg"),
-    },
-  ];
-
-  const separator = () => {
-    return <View style={{ height: 10, backgroundColor: "#fff" }}></View>;
-  };
-
-  return (
-    <View style={styles.container}>
-      <View style={{ padding: 10, paddingTop: 0 }}>
-        {songs.map((item) => (
-          <Song key={item.title} item={item} navigation={props.navigation} />
-        ))}
-      </View>
+      </TouchableWithoutFeedback> */}
     </View>
   );
 }

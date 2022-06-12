@@ -1,181 +1,89 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Image, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, SafeAreaView } from "react-native";
 import { request } from "../utils/Request";
 import HeaderHome from "./header/HeaderHome";
 import PopularSongs from "./popular-songs/PopularSongs";
+import { useDispatch, useSelector } from "react-redux";
+import { gettopsongs, getcommanedsongs } from "../../redux/actions/songs";
+import { gettopartists } from "../../redux/actions/artists";
+import { getcategories } from "../../redux/actions/categories";
 
 export default function HomeScreen({ navigation }) {
-  const recommendList = [
-    {
-      id: "01",
-      title: "Believer",
-      subTitle: "Imagine Dragons",
-      duration: 201.6,
-      img: require("../../assets/images/s1.jpg"),
-    },
-    {
-      id: "02",
-      title: "Hall Of Fame",
-      subTitle: "The Script",
-      duration: 201.6,
-      img: require("../../assets/images/s2.jpg"),
-    },
-    {
-      id: "03",
-      title: "It's My Life",
-      subTitle: "Dr. Alban",
-      duration: 201.6,
-      img: require("../../assets/images/s3.jpg"),
-    },
-    {
-      id: "04",
-      title: "Not Afraid",
-      subTitle: "Eminem",
-      duration: 201.6,
-      img: require("../../assets/images/s4.jpg"),
-    },
-    {
-      id: "05",
-      title: "I Will Survive",
-      subTitle: "Gloria Gaynor",
-      duration: 201.6,
-      img: require("../../assets/images/s5.jpeg"),
-    },
-  ];
-  const [dataTopSongs, setDataTopSongs] = useState([]);
+  const dispatch = useDispatch();
+  const { dataTopSongs, dataRecommendedSongs, dataTopArtists, dataCategories } =
+    useSelector((state) => state);
+
+  // const [dataTopSongs,setDataTopSongs]= useState([]);
+
   useEffect(() => {
     request
       .get("songs/getTopSong")
-      .then((result) => console.log(result))
+      .then((result) => {
+        dispatch(gettopsongs(result.data));
+      })
       .catch((error) => console.error(error));
-  },[]);
 
-  const popularSongList = [
-    {
-      id: "01",
-      title: "Hall Of Fame",
-      subTitle: "The Script",
-      duration: 201.6,
-      img: require("../../assets/images/s2.jpg"),
-    },
-    {
-      id: "02",
-      title: "Believer",
-      subTitle: "Imagine Dragons",
-      duration: 201.6,
-      img: require("../../assets/images/s1.jpg"),
-    },
-    {
-      id: "03",
-      title: "Not Afraid",
-      subTitle: "Eminem",
-      duration: 201.6,
-      img: require("../../assets/images/s4.jpg"),
-    },
-    {
-      id: "04",
-      title: "It's My Life",
-      subTitle: "Dr. Alban",
-      duration: 201.6,
-      img: require("../../assets/images/s3.jpg"),
-    },
-    {
-      id: "05",
-      title: "Not Afraid",
-      subTitle: "Eminem",
-      duration: 201.6,
-      img: require("../../assets/images/s4.jpg"),
-    },
-    {
-      id: "06",
-      title: "I Will Survive",
-      subTitle: "Gloria Gaynor",
-      duration: 201.6,
-      img: require("../../assets/images/s5.jpeg"),
-    },
-  ];
+    request
+      .get("songs/getRecommended")
+      .then((result) => {
+        dispatch(getcommanedsongs(result.data));
+      })
+      .catch((error) => console.error(error));
 
-  const topArtistsList = [
-    {
-      id: "01",
-      name: "Taylor Swift",
-      view: 2000000,
-      img: require("../../assets/images/cs1.jpg"),
-    },
-    {
-      id: "02",
-      name: "Justin Bieber",
-      view: 2000000,
-      img: require("../../assets/images/cs2.jpg"),
-    },
-    {
-      id: "03",
-      name: "Lady Gaga",
-      view: 2000000,
-      img: require("../../assets/images/cs3.jpg"),
-    },
-    {
-      id: "04",
-      name: "Katy Perry",
-      view: 2000000,
-      img: require("../../assets/images/cs4.jpg"),
-    },
-    {
-      id: "05",
-      name: "Adele",
-      view: 2000000,
-      img: require("../../assets/images/cs1.jpg"),
-    },
-    {
-      id: "06",
-      name: "Sia",
-      view: 2000000,
-      img: require("../../assets/images/s4.jpg"),
-    },
-  ];
+    request
+      .get("artists/getTopArtists")
+      .then((result) => {
+        dispatch(gettopartists(result.data));
+      })
+      .catch((error) => console.error(error));
 
-  const categoriesList = [
-    {
-      id: "01",
-      name: "A - PROP",
-      img: require("../../assets/images/c1.jpg"),
-    },
-    {
-      id: "02",
-      name: "B - PROP",
-      img: require("../../assets/images/c2.jpg"),
-    },
-    {
-      id: "03",
-      name: "C - PROP",
-      img: require("../../assets/images/c3.jpg"),
-    },
-    {
-      id: "04",
-      name: "HIP - PROP",
-      img: require("../../assets/images/c4.jpg"),
-    },
-    {
-      id: "05",
-      name: "HIP - HOP",
-      img: require("../../assets/images/c5.jpg"),
-    },
-    {
-      id: "06",
-      name: "VIET NAM",
-      img: require("../../assets/images/c1.jpg"),
-    },
-  ];
+    request
+      .get("categories/getTopCategoris")
+      .then((result) => {
+        dispatch(getcategories(result.data));
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
+  // console.log("result  : ", topSongs);
+  // console.log("result  : ", dataTopArtists);
+  // console.log("result  : ", dataCategories);
+   /**
+    * khi e goi log o day. thi 
+    * - dau tien, component khoi tao thi la 1 lan []
+    * - tiep den goi them 1 lan khi component nhan data => 2 lan []
+    * - tiep tuc 1 lan nua trong luc API dang duoc goi
+    * - lan 4: hien ra data la sau khi dispatch done.
+    * yep. hoat dong dung roi
+    * toi nay sau 11h nhe. ok =))
+    * ok. The toi lai gap nhe =))) byeeeee
+    */
 
   return (
     <View style={styles.container}>
       <HeaderHome navigation={navigation} />
 
       <ScrollView>
-        <PopularSongs title="Recommended For You" data={recommendList} />
-        <PopularSongs title="Popular song" data={popularSongList} />
-        <PopularSongs title="Top artists" data={topArtistsList} />
-        <PopularSongs title="Categories" data={categoriesList} />
+        <PopularSongs
+          title="Recommended For You"
+          data={dataRecommendedSongs}
+          navigation={navigation}
+        />
+        <PopularSongs
+          title="Popular song"
+          data={dataTopSongs}
+          navigation={navigation}
+        />
+        <PopularSongs
+          title="Top artists"
+          data={dataTopArtists}
+          navigation={navigation}
+        />
+        <PopularSongs
+          title="Categories"
+          data={dataCategories}
+          navigation={navigation}
+        />
       </ScrollView>
     </View>
   );

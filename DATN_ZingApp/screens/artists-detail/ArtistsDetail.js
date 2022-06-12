@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,14 +12,18 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("screen");
 
-export default function ArtistsDetail() {
+export default function ArtistsDetail(props) {
+  console.log(props.route.params.items);
+  // const[dataArtist,setDataArtist]=useState([]);
+
+  let dataAritsts = props.route.params.items;
   return (
     <View style={styles.container}>
       <View>
         <Image
           resizeMode="cover"
           style={styles.imgArtists}
-          source={require("../../assets/images/sontungmtp.webp")}
+          source={{uri:`http://192.168.1.4:8000/${dataAritsts[0].image}`}}
         />
         <LinearGradient
         colors={['rgba(0,0,0,0.1)','black']}
@@ -42,11 +46,11 @@ export default function ArtistsDetail() {
 
         <View style={styles.containerArtists}>
           <View>
-            <Text style={styles.name}>Sơn tùng M-TP</Text>
+            <Text style={styles.name}>{dataAritsts[0].name}</Text>
           </View>
 
           <View>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
+            <Text style={styles.textFollow}>{dataAritsts[0].follows} Follow</Text>
           </View>
 
           <View style={styles.containerButton}>

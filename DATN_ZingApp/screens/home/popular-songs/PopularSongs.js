@@ -10,10 +10,63 @@ import {
 } from "react-native";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useDispatch } from "react-redux";
+import { dataplaysongs } from "../../../redux/actions/songs";
+
+const KEY_TYPE = {
+  TOP_SONGS: "topSongs",
+  TOP_ARTISTS: "topArtists",
+  TOP_CATEGORIES: "topCategories",
+};
 
 const { width, height } = Dimensions.get("window");
 
 export default function PopularSongs(props) {
+  const dispatch = useDispatch();
+  const mapKey = (item) => {
+    if (item.idSong) {
+      return KEY_TYPE.TOP_SONGS;
+    }
+
+    if (item.idArtist) {
+      return KEY_TYPE.TOP_ARTISTS;
+    }
+
+    if (item.idCategories) {
+      return KEY_TYPE.TOP_CATEGORIES;
+    }
+  };
+
+  const handleSongAndNavigate = (screenName, items) => {
+    if(screenName==="PlayerMusic"){
+        dispatch(dataplaysongs(items));
+        // console.log('songs : ',songs);
+    }
+    // dispatchEvent(songs)
+    props.navigation.navigate(screenName,{items});
+  };
+
+  const onHandlerPlaySong = (item) => {
+    const keyType = mapKey(item);
+
+    switch (keyType) {
+      case KEY_TYPE.TOP_SONGS:
+        handleSongAndNavigate("PlayerMusic", [item]);
+        break;
+
+      case KEY_TYPE.TOP_ARTISTS:
+        handleSongAndNavigate("ArtistsDetail",[item]);
+        break;
+
+      case KEY_TYPE.TOP_CATEGORIES:
+        handleSongAndNavigate("CategoriesDetails", [item]);
+        break;
+
+      default:
+        return;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.containerTitle}>
@@ -30,20 +83,25 @@ export default function PopularSongs(props) {
 
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         {props.data.map((item) => (
-          <TouchableWithoutFeedback key={item.id}>
+          <TouchableWithoutFeedback
+            key={item.idSong || item.idArtist || item.idCategoris}
+            onPress={() => onHandlerPlaySong(item)}
+          >
             <View style={styles.containerItem}>
               <Surface style={styles.surface}>
                 <ImageBackground
-                  source={item.img}
+                  source={{
+                    uri: `http://192.168.1.4:8000/${item.cover || item.image}`,
+                  }}
                   style={styles.img}
                 ></ImageBackground>
               </Surface>
 
               <Text numberOfLines={1} ellipsizeMode="tail" style={styles.name}>
-                {item.name || item.title}
+                {item.namesong || item.nameartists || item.name}
               </Text>
 
-              <Text style={styles.artists}>{item.subTitle}</Text>
+              <Text style={styles.artists}>{item.nameartists}</Text>
             </View>
           </TouchableWithoutFeedback>
         ))}

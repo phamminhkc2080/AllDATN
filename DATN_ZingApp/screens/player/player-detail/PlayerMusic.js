@@ -18,10 +18,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
+import { useDispatch, useSelector } from "react-redux";
 
 const { width, height } = Dimensions.get("window");
 
-const PlayerMusic = () => {
+const PlayerMusic = (props) => {
+  const dispatch = useDispatch();
+  const { dataPlaySongs } = useSelector((state) => state);
+
   const songs = [
     {
       id: 1,
@@ -82,8 +86,8 @@ const PlayerMusic = () => {
   const [isSliding, setSliding] = useState(false);
   const [isRepeat, setRepeat] = useState(true);
 
-  async function createSound(index, callback) {
-    const { sound } = await Audio.Sound.createAsync(songs[index].song);
+  async function createSound(data, index, callback) {
+    const { sound } = await Audio.Sound.createAsync({uri:`http://192.168.1.4:8000/${data[index].dir}`});
     setSound(sound);
 
     if (typeof callback == "function") {
@@ -96,15 +100,19 @@ const PlayerMusic = () => {
   };
 
   useEffect(() => {
-    createSound(songIndex, (newSound) => {
+    createSound(dataPlaySongs, songIndex, (newSound) => {
       newSound
         .getStatusAsync()
         .then((result) => setDuration(result.durationMillis));
     });
-  }, []);
+  }, [dataPlaySongs]);
+
+  // useEffect(() => {
+  //   // handle songs from useSelector/redux store
+  // }, [dataPlaySongs]);
 
   const onHandlerNext = () => {
-    if (songIndex >= songs.length - 1) {
+    if (songIndex >= dataPlaySongs.length - 1) {
       return;
     }
     if (sound) {
@@ -112,7 +120,7 @@ const PlayerMusic = () => {
     }
 
     setSongIndex(songIndex + 1);
-    createSound(songIndex + 1, (newSound) => {
+    createSound(dataPlaySongs, songIndex + 1, (newSound) => {
       newSound.playAsync();
     });
 
@@ -128,7 +136,7 @@ const PlayerMusic = () => {
     }
 
     setSongIndex(songIndex - 1);
-    createSound(songIndex - 1, (newSound) => {
+    createSound(dataPlaySongs, songIndex - 1, (newSound) => {
       newSound.playAsync();
     });
 
@@ -142,7 +150,7 @@ const PlayerMusic = () => {
       if (sound) {
         await sound.playAsync();
       } else {
-        createSound(songIndex, (newSound) => {
+        createSound(dataPlaySongs, songIndex, (newSound) => {
           newSound.playAsync();
         });
       }
@@ -158,14 +166,24 @@ const PlayerMusic = () => {
           setDuration(result.durationMillis);
           setPosition(result.positionMillis);
           if (result.didJustFinish) {
-            
-            setPlaying(false);
-            setSongIndex(songIndex + 1);
-            setPosition(0);
-            createSound(songIndex + 1, (newSound) => {
-              newSound.playAsync();
-            });
-            setPlaying(true);
+
+            if (result.isLooping) {
+              return;
+            }
+
+            if(songIndex < dataPlaySongs.length-1){
+              setPlaying(false);
+              setSongIndex(songIndex + 1);
+              setPosition(0);
+              createSound(dataPlaySongs, songIndex + 1, (newSound) => {
+                newSound.playAsync();
+              });
+              setPlaying(true);
+            }else{
+              setPosition(0);
+              setPlaying(false);
+            }
+           
           }
         });
       }, 500);
@@ -204,10 +222,9 @@ const PlayerMusic = () => {
 
   const onHandlerRepeat = () => {
     setRepeat((repeat) => !repeat);
-    console.log("repeat : ", isRepeat);
     sound.setIsLoopingAsync(isRepeat);
   };
-
+  // console.log('sount : ', dataPlaySongs[songIndex]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.maincontainer}>
@@ -215,17 +232,17 @@ const PlayerMusic = () => {
           <View style={[styles.imageWrapper, styles.elevation]}>
             <Image
               style={styles.musicImage}
-              source={songs[songIndex].artwork}
+              source={{uri:`http://192.168.1.4:8000/${dataPlaySongs[songIndex].cover}`}}
             />
           </View>
         </Animated.View>
         {/* Song Content */}
         <View>
           <Text style={[styles.songContent, styles.songTitle]}>
-            {songs[songIndex].title}
+            {dataPlaySongs[songIndex].namesong}
           </Text>
           <Text style={[styles.songContent, styles.songArtist]}>
-            {songs[songIndex].artist}
+            {dataPlaySongs[songIndex].nameartists}
           </Text>
         </View>
 
@@ -298,7 +315,7 @@ const PlayerMusic = () => {
               color="#FFD369"
             />
           </TouchableOpacity>
-          {songIndex >= songs.length - 1 ? (
+          {songIndex >= dataPlaySongs.length - 1 ? (
             <Ionicons name="play-skip-forward-outline" size={35} color="#eee" />
           ) : (
             <TouchableOpacity onPress={onHandlerNext}>

@@ -11,10 +11,24 @@ const getTopCategoris = async (req, res) => {
     return res.status(200).send(getTopCategoris)
 }
 
+const getCategorisTrending = async (req, res) => {
+
+    const getCategorisTrending= await dao.sequelize.query(
+        `SELECT top(3) * FROM Categoris`, { raw: true, nest: true }
+    )
+    return res.status(200).send(getCategorisTrending)
+
+
+   
+}
+
+
+
 
 
 
 
 module.exports = {
-    getTopCategoris
+    getTopCategoris,
+    getCategorisTrending
 }
