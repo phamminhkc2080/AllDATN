@@ -10,10 +10,19 @@ const getTopArtists = async (req, res) => {
     return res.status(200).send(getTopArtists)
 }
 
+const getAllArtists = async (req, res) => {
+
+    const getAllArtists= await dao.sequelize.query(
+        `select * from Artist Order by follows desc`, { raw: true, nest: true }
+    )
+    return res.status(200).send(getAllArtists)
+}
+
 
 
 
 
 module.exports = {
-    getTopArtists
+    getTopArtists,
+    getAllArtists
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -12,47 +12,71 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Surface } from "react-native-paper";
-
+import { useDispatch, useSelector } from "react-redux";
+import { getDataPlaySongs, indexSong } from "../../../redux/actions/songs";
 
 const { width, height } = Dimensions.get("window");
 
-export function Song(props) {
-  console.log("dataSong : ", props.item);
+const Song = ({ item, navigation, index, screenName }) => {
+  const dispatch = useDispatch();
+  const {
+    dataSongCategory,
+    dataSongArtists,
+    dataPlaySongs,
+    dataSongsSearch,
+  } = useSelector((state) => state);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const playSong = (item) => {
-    props.navigation.navigate("PlayerMusic");
-    // , { item: item }
-    // console.log('item : ', item);
+  const handlerGetData = () => {
+    if (screenName === "TrendingSongs") {
+      console.log('dataSongCategory : ',dataSongCategory)
+
+      dispatch(getDataPlaySongs(dataSongCategory));
+    } else if (screenName === "ArtistsDetail") {
+      dispatch(getDataPlaySongs(dataSongArtists));
+    } else if (screenName === "ResultSearch") {
+      dispatch(getDataPlaySongs(dataSongsSearch));
+    }
+  };
+  const playSong = () => {
+    navigation.navigate("PlayerMusic");
+
+    dispatch(indexSong(index));
   };
 
   const openModal = () => {
     setModalVisible(true);
   };
+
   const closeModal = () => {
     setModalVisible(false);
   };
-  let itemPro = props.item;
+
+  useEffect(() => {
+    handlerGetData();
+  }, [dataPlaySongs]);
 
   return (
     <View>
-        <Text>{props.item}</Text>
-      {/* <Modal
+      <Modal
         transparent={true}
-        onRequestClose={() => closeModal()}
+        onRequestClose={closeModal}
         visible={modalVisible}
         animationType="fade"
       >
         <View style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.4)" }}>
           <View style={styles.modal}>
             <Surface style={styles.surface}>
-              <Image source={itemPro.img} style={styles.modalImg} />
+              <Image
+                source={{ uri: `http://192.168.0.105:8000/${item.cover}` }}
+                style={styles.modalImg}
+              />
             </Surface>
 
             <View style={styles.modalData}>
               <View style={styles.playerContainer}>
-                <Text style={styles.title}>{itemPro.title}</Text>
-                <Text style={styles.subTitle}>{itemPro.subTitle}</Text>
+                <Text style={styles.title}>{item.name}</Text>
+                <Text style={styles.subTitle}>{item.name}</Text>
                 <TouchableOpacity style={styles.btn}>
                   <Icon name="play" size={30} color="#fff" />
                 </TouchableOpacity>
@@ -78,15 +102,15 @@ export function Song(props) {
         </View>
       </Modal>
 
-      <TouchableWithoutFeedback
-        style={styles.songContainer}
-        onPress={() => playSong(itemPro)}
-      >
+      <TouchableWithoutFeedback style={styles.songContainer} onPress={playSong}>
         <View style={{ flexDirection: "row", paddingBottom: 10 }}>
-          <Image source={itemPro.img} style={styles.img} />
+          <Image
+            source={{ uri: `http://192.168.0.105:8000/${item.cover}` }}
+            style={styles.img}
+          />
           <View style={styles.dataContainer}>
-            <Text style={styles.songtitle}>{itemPro.title}</Text>
-            <Text style={styles.subTitle}>{itemPro.subTitle}</Text>
+            <Text style={styles.songtitle}>{item.namesong}</Text>
+            <Text style={styles.subTitle}>{item.nameartists}</Text>
           </View>
           <View style={styles.iconContainer}>
             <Icon
@@ -95,15 +119,16 @@ export function Song(props) {
               size={30}
               style={{ marginRight: 10 }}
             />
-            <TouchableOpacity onPress={() => openModal()}>
+            <TouchableOpacity onPress={openModal}>
               <Icon name="dots-vertical" color="gray" size={30} />
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableWithoutFeedback> */}
+      </TouchableWithoutFeedback>
     </View>
   );
-}
+};
+export default Song;
 
 const styles = StyleSheet.create({
   container: {

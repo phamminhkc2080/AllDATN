@@ -1,34 +1,59 @@
-import {  GET_TOP_SONGS,GET_RECOMMENDED_SONGS,DATAPLAYSONGS,GET_SONG_OF_CATEGORY } from "../constants/types"
+import {
+  GET_TOP_SONGS,
+  GET_RECOMMENDED_SONGS,
+  DATA_PLAY_SONGS,
+  GET_SONG_OF_CATEGORY,
+  GET_SONG_INDEX,
+  GET_SONG_ARTISTS,
+  GET_SONG_SEARCH
+} from "../constants/types";
 
-
-export const gettopsongs = dataTopSong => {
+export const gettopsongs = (dataTopSong) => {
   return {
     type: GET_TOP_SONGS,
-    payload: dataTopSong
-  }
-}
+    payload: dataTopSong,
+  };
+};
 
-export const getcommanedsongs = dataRecommenedSong => {
+export const getcommanedsongs = (dataRecommenedSong) => {
   return {
     type: GET_RECOMMENDED_SONGS,
-    payload: dataRecommenedSong
-  }
-}
+    payload: dataRecommenedSong,
+  };
+};
 
-export const dataplaysongs = dataplaysongs => {
-  // console.log('dataAc : ', dataplaysongs);
+export const getDataPlaySongs = (dataPlaySongs) => {
   return {
-    type: DATAPLAYSONGS,
-    payload: dataplaysongs
-  }
-}
+    type: DATA_PLAY_SONGS,
+    payload: dataPlaySongs,
+  };
+};
 
-export const dataSongsOfCategory = datasongsofcategory => {
-  // console.log('dataAc : ', dataplaysongs);
+export const dataSongsOfCategory = (datasongsofcategory) => {
   return {
     type: GET_SONG_OF_CATEGORY,
-    payload: datasongsofcategory
-  }
-}
+    payload: datasongsofcategory,
+  };
+};
 
+export const indexSong = (index) => {
+  return {
+    type: GET_SONG_INDEX,
+    payload: index,
+  };
+};
+
+export const getSongArtists = (dataSongArtists) => {
+  return {
+    type: GET_SONG_ARTISTS,
+    payload: dataSongArtists,
+  };
+};
+
+export const getSongSearch = (songSearch) => {
+  return {
+    type: GET_SONG_SEARCH,
+    payload: songSearch,
+  };
+};
 

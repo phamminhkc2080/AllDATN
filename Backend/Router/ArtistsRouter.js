@@ -5,6 +5,7 @@ var router = express.Router();
 const applicantController = require("../src/ArtistsController")
     //handles post request with url 
 router.get('/getTopArtists', applicantController.getTopArtists);
+router.get('/get-all-artists', applicantController.getAllArtists);
 
 
 // export router to use in index file

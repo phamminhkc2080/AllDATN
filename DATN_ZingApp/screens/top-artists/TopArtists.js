@@ -5,19 +5,31 @@ import {
   Image,
   Text,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  FlatList,
+  SafeAreaView
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { request } from "../utils/Request";
 
 export default function TopArtists(props) {
+  const [dataAllArtists, setDataAllArtists] = useState([]);
+  const gotoArtitsDetail = (items) => {
+    props.navigation.navigate("ArtistsDetail",{items});
+  };
 
-  const gotoArtitsDetail=()=>{
-    props.navigation.navigate("ArtistsDetail");
-  }
-
+  useEffect(() => {
+    request
+      .get("/artists/get-all-artists")
+      .then((result) => {
+        setDataAllArtists(result.data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
+  console.log(dataAllArtists);
   return (
-    <View style={styles.constainer}>
+    <SafeAreaView style={styles.constainer}>
       <View style={styles.searchSection}>
         <Ionicons
           style={styles.searchIcon}
@@ -31,163 +43,50 @@ export default function TopArtists(props) {
           underlineColorAndroid="transparent"
         />
       </View>
-     <ScrollView>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/sontungmtp.webp")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/cs1.jpg")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/cs2.jpg")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/cs3.jpg")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/cs4.jpg")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/cs5.jpg")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/sontungmtp.webp")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.containerComponent}>
-        <TouchableOpacity style={styles.containerArtits} onPress={gotoArtitsDetail}>
-          <View>
-            <Image
-              style={styles.imgArtists}
-              source={require("../../assets/images/sontungmtp.webp")}
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textName}>Sơn Tùng M-TP</Text>
-            <Text style={styles.textFollow}>2.3M Follow</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.containerFollow}>
-          <TouchableOpacity style={styles.buttonFollow}>
-            <Text style={styles.textFollow}>Follow</Text>
-          </TouchableOpacity>
-        </View>
-        
-      </View>
-      </ScrollView>
-      
-    </View>
+
+      <FlatList
+        data={dataAllArtists}
+        keyExtractor={(item) => item.idArtist}
+        renderItem={(item) => {
+          return (
+            
+            <View style={styles.containerComponent}>
+              {/* {console.log('data : ', [item.item])} */}
+              <TouchableOpacity
+                style={styles.containerArtits}
+                onPress={()=>gotoArtitsDetail(item.item)
+                
+                }
+              >
+                <View>
+                  <Image
+                    style={styles.imgArtists}
+                    source={{
+                      uri: `http://192.168.0.105:8000/${item.item.image}`,
+                    }}
+                  />
+                </View>
+                <View style={styles.containerText}>
+                  <Text
+                    style={styles.textName}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {item.item.name}
+                  </Text>
+                  <Text style={styles.textFollow}>{item.item.follows}</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={styles.containerFollow}>
+                <TouchableOpacity style={styles.buttonFollow}>
+                  <Text style={styles.textFollow}>Follow</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          );
+        }}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -218,6 +117,8 @@ const styles = StyleSheet.create({
   containerComponent: {
     flexDirection: "row",
     padding: 13,
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerArtits: {
     flexDirection: "row",
@@ -238,6 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     paddingBottom: 10,
+    width: 100,
   },
   textFollow: {
     fontSize: 15,

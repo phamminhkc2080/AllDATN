@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,34 +6,55 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  FlatList
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useDispatch,useSelector } from "react-redux";
+import { getDataPlaySongs,getSongArtists } from "../../redux/actions/songs";
+import { request } from "../utils/Request";
+import Song from "../home/songs/Song";
 
 const { width, height } = Dimensions.get("screen");
 
 export default function ArtistsDetail(props) {
-  console.log(props.route.params.items);
-  // const[dataArtist,setDataArtist]=useState([]);
-
   let dataAritsts = props.route.params.items;
+
+  
+
+  const dispatch = useDispatch();
+  const { dataPlaySongs,dataSongArtists } = useSelector((state) => state);
+  useEffect(()=>{
+    request
+      .get("/songs/get-artists-songs" + (dataAritsts.idArtist ? "?id=" + dataAritsts.idArtist : ""))
+      .then((result) => {
+        dispatch(getSongArtists(result.data));
+      })
+      .catch((error) => console.error(error));
+  },[])
+
+  const onHanderBack = () => {
+    props.navigation.goBack();
+  };
+
+  
   return (
     <View style={styles.container}>
       <View>
         <Image
           resizeMode="cover"
           style={styles.imgArtists}
-          source={{uri:`http://192.168.1.4:8000/${dataAritsts[0].image}`}}
+          source={{ uri: `http://192.168.0.105:8000/${dataAritsts.image}` }}
         />
         <LinearGradient
-        colors={['rgba(0,0,0,0.1)','black']}
-        l
+          colors={["rgba(0,0,0,0.1)", "black"]}
+          l
           style={{
             width: width,
             height: 360,
             borderBottomLeftRadius: 30,
             borderBottomRightRadius: 30,
-            position:'absolute'
+            position: "absolute",
           }}
         ></LinearGradient>
 
@@ -42,15 +63,16 @@ export default function ArtistsDetail(props) {
           name="arrow-left"
           size={30}
           color="black"
+          onPress={onHanderBack}
         />
 
         <View style={styles.containerArtists}>
           <View>
-            <Text style={styles.name}>{dataAritsts[0].name}</Text>
+            <Text style={styles.name}>{dataAritsts.name}</Text>
           </View>
 
           <View>
-            <Text style={styles.textFollow}>{dataAritsts[0].follows} Follow</Text>
+            <Text style={styles.textFollow}>{dataAritsts.follows} Follow</Text>
           </View>
 
           <View style={styles.containerButton}>
@@ -75,6 +97,14 @@ export default function ArtistsDetail(props) {
           />
         </View>
       </View>
+      <FlatList 
+      data={dataSongArtists}
+      keyExtractor={item=>item.idSong}
+      renderItem={({item,index})=>{
+          
+       return <Song item={item} index = {index} navigation={props.navigation} screenName = 'ArtistsDetail'/>
+      }}
+      />
     </View>
   );
 }

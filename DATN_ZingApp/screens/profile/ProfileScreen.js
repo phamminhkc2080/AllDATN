@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import React from "react";
 import ProfileDetail from "./profile-detail/ProfileDetail";
-import Songs from "../home/songs/Songs";
 
 export default function ProfileScreen({navigation}) {
   return (

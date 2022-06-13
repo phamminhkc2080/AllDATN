@@ -1,17 +1,36 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import Songs from "../home/songs/Songs";
+import { StyleSheet, Text, View, Image, TouchableOpacity ,FlatList} from "react-native";
+import Song from "../home/songs/Song";
+import { useDispatch, useSelector } from "react-redux";
+import { getDataPlaySongs } from "../../redux/actions/songs";
+import { request } from "../utils/Request";
 
 export default function CategoriesDetails(props) {
-  let data = props.route.params.item;
+  const dispatch = useDispatch();
+  const { dataPlaySongs } = useSelector((state) => state);
 
+  let data = props.route.params.items;
+  console.log('item : ', props.route.params.items)
+  
+  useEffect(() => {
+    request
+      .get("/songs/get-category-songs" + (data.idCategoris ? "?id=" + data.idCategoris : "?id="))
+      .then((result) => {
+        if(result?.data){
+          dispatch(getDataPlaySongs(result.data));
+        }else{
+          console.error('result.data not valid!')
+        }
+      })
+      .catch((error) => console.error(error));
+  }, []);
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Surface style={styles.surface}>
-          <Image source={data.img} style={styles.img} />
+          <Image source={{uri:`http://192.168.0.105:8000/${data.cover}`}} style={styles.img} />
         </Surface>
 
         <Text style={styles.title}>{data.name}</Text>
@@ -24,8 +43,14 @@ export default function CategoriesDetails(props) {
         </View>
       </View>
 
-      <Text style={styles.text2}>Songs</Text>
-      <Songs navigation={props.navigation} />
+       <Text style={styles.text2}>Songs</Text>
+       <FlatList
+        data={dataPlaySongs}
+        renderItem={({ item,index }) => {
+          return (
+            <View style={{ paddingHorizontal: 10 }}>
+              <Song item={item} navigation={navigation} index = {index}/>
+              {/* {console.log(item)} */}
     </View>
   );
 }

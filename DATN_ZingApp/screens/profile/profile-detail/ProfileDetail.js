@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Songs from "../../home/songs/Songs";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -49,7 +48,6 @@ export default function ProfileDetail() {
       <View style={styles.divider} />
       <View style={styles.containerItems}>
         <Text style={styles.titleHistory}>History</Text>
-        <Songs />
       </View>
     </View>
   );

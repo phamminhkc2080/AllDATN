@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useDispatch } from "react-redux";
-import { dataplaysongs } from "../../../redux/actions/songs";
+import { useDispatch,useSelector } from "react-redux";
+import { getDataPlaySongs, indexSong } from "../../../redux/actions/songs";
 
 const KEY_TYPE = {
   TOP_SONGS: "topSongs",
@@ -22,7 +22,9 @@ const KEY_TYPE = {
 const { width, height } = Dimensions.get("window");
 
 export default function PopularSongs(props) {
+
   const dispatch = useDispatch();
+  const {storeIndexSong} = useSelector(state=>state)
   const mapKey = (item) => {
     if (item.idSong) {
       return KEY_TYPE.TOP_SONGS;
@@ -32,34 +34,42 @@ export default function PopularSongs(props) {
       return KEY_TYPE.TOP_ARTISTS;
     }
 
-    if (item.idCategories) {
+    if (item.idCategoris) {
       return KEY_TYPE.TOP_CATEGORIES;
     }
   };
 
   const handleSongAndNavigate = (screenName, items) => {
-    if(screenName==="PlayerMusic"){
-        dispatch(dataplaysongs(items));
-        // console.log('songs : ',songs);
+    if (screenName === "PlayerMusic") {
+      dispatch(getDataPlaySongs(items));
+      // console.log('songs : ',songs);
     }
-    // dispatchEvent(songs)
-    props.navigation.navigate(screenName,{items});
+    props.navigation.navigate(screenName,items);
+  };
+  const handlerIndexSong = (index) => {
+    //  console.log('indexPo : ', index)
+    dispatch(indexSong(index));
   };
 
-  const onHandlerPlaySong = (item) => {
+  const onHandlerPlaySong = (item, index) => {
     const keyType = mapKey(item);
 
     switch (keyType) {
       case KEY_TYPE.TOP_SONGS:
-        handleSongAndNavigate("PlayerMusic", [item]);
+        {
+          handleSongAndNavigate("PlayerMusic", [item]);
+          handlerIndexSong(index);
+        }
+
         break;
 
       case KEY_TYPE.TOP_ARTISTS:
-        handleSongAndNavigate("ArtistsDetail",[item]);
+        handleSongAndNavigate("ArtistsDetail", item);
         break;
 
       case KEY_TYPE.TOP_CATEGORIES:
-        handleSongAndNavigate("CategoriesDetails", [item]);
+        handleSongAndNavigate("CategoriesDetails", item);
+
         break;
 
       default:
@@ -82,16 +92,16 @@ export default function PopularSongs(props) {
       </View>
 
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {props.data.map((item) => (
+        {props.data.map((item, index) => (
           <TouchableWithoutFeedback
             key={item.idSong || item.idArtist || item.idCategoris}
-            onPress={() => onHandlerPlaySong(item)}
+            onPress={() => onHandlerPlaySong(item, index)}
           >
             <View style={styles.containerItem}>
               <Surface style={styles.surface}>
                 <ImageBackground
                   source={{
-                    uri: `http://192.168.1.4:8000/${item.cover || item.image}`,
+                    uri: `http://192.168.0.105:8000/${item.cover || item.image}`,
                   }}
                   style={styles.img}
                 ></ImageBackground>

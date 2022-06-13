@@ -8,40 +8,48 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { Song } from "../home/songs/Song";
+import Song from "../home/songs/Song";
 import { request } from "../utils/Request";
 import { useDispatch, useSelector } from "react-redux";
-import { dataplaysongs, dataSongsOfCategory } from "../../redux/actions/songs";
-import Demo from "../home/songs/Demo";
+import {  dataSongsOfCategory } from "../../redux/actions/songs";
 
-export default function TrendingSongs() {
+export default function TrendingSongs({navigation}) {
   const dispatch = useDispatch();
-  const { dataPlaySongs } = useSelector((state) => state);
+  const { dataSongCategory } = useSelector((state) => state);
   const [dataCategoriesTrending, setDataCategoriesTrending] = useState([]);
 
   useEffect(() => {
     request
-      .get("categories/getCategorisTrending")
+      .get("/categories/getCategorisTrending")
       .then((result) => {
-        setDataCategoriesTrending(result.data);
+        if(result?.data){
+          setDataCategoriesTrending(result?.data);
+        }else{
+          console.error('result.data not valid!')
+        }
+        
       })
       .catch((error) => console.error(error));
   }, []);
 
   const onHandlerGetDataSongs = (id) => {
     request
-      .get("songs/get-category-songs" + (id ? "?id=" + id : "?id=1"))
+      .get("/songs/get-category-songs" + (id ? "?id=" + id : "?id=1"))
       .then((result) => {
-        dispatch(dataplaysongs(result.data));
+        if(result?.data){
+          console.log('result : ', result.data);
+          dispatch(dataSongsOfCategory(result.data));
+        }else{
+          console.error('result.data not valid!')
+        }
       })
       .catch((error) => console.error(error));
   };
-
   useEffect(() => {
     onHandlerGetDataSongs();
   }, []);
 
-  // console.log('songsPlay : ', dataPlaySongs)
+ 
   return (
     <View style={styles.container}>
       <Image
@@ -80,15 +88,14 @@ export default function TrendingSongs() {
       </View>
 
       <FlatList
-        data={dataPlaySongs}
-        renderItem={(item) => {
-          <View style={{ paddingHorizontal: 10 }}>
-            <Demo item={item.item}/>
-            {/* <Song item={item.item} /> */}
-          </View>;
-          // console.log(item.item)
-
-          
+        data={dataSongCategory}
+        renderItem={({ item,index }) => {
+          return (
+            <View style={{ paddingHorizontal: 10 }}>
+              <Song item={item} navigation={navigation} index = {index} screenName = 'TrendingSongs'/>
+              {/* {console.log(item)} */}
+            </View>
+          );
         }}
         keyExtractor={(item) => item.idSong}
       />

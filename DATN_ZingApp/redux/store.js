@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { reducerTopArtists } from "./reducers/artists";
 import { reducerCategories } from "./reducers/categories";
-import { reducerPlaySongs, reducerRecommenedSongs, reducerSongofCategory, reducerTopSong } from "./reducers/songs";
+import { reducerIndexSong, reducerPlaySongs, reducerRecommenedSongs, reducerSongofCategory, reducerSongsArtists, reducerSongsSearch, reducerTopSong } from "./reducers/songs";
 
 const rootReducer = {
     dataTopSongs :  reducerTopSong ,
@@ -9,6 +9,9 @@ const rootReducer = {
     dataTopArtists:reducerTopArtists,
     dataCategories:reducerCategories,
     dataPlaySongs : reducerPlaySongs,
-    dataSongOfCategory : reducerSongofCategory
+    dataSongCategory : reducerSongofCategory,
+    storeIndexSong : reducerIndexSong,
+    dataSongArtists:reducerSongsArtists,
+    dataSongsSearch:reducerSongsSearch
 }
 export const store = configureStore({reducer : rootReducer});

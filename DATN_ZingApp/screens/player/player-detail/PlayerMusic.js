@@ -19,63 +19,13 @@ import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const { width, height } = Dimensions.get("window");
 
 const PlayerMusic = (props) => {
   const dispatch = useDispatch();
-  const { dataPlaySongs } = useSelector((state) => state);
-
-  const songs = [
-    {
-      id: 1,
-      title: "19th Floor",
-      artist: "Bobby Richards",
-      artwork: require("../../../assets/images/img1.jpg"),
-      url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2F19th%20Floor%20-%20Bobby%20Richards.mp3?alt=media&token=4fe09d01-c064-440e-9fa7-e02005ebd79f",
-      song: require("../../../assets/audio/BIGBANG-(SOBER)MV.mp3"),
-    },
-    {
-      id: 2,
-      title: "Awful",
-      artist: "josh pan",
-      artwork: require("../../../assets/images/img2.jpg"),
-      url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FAwful%20-%20josh%20pan.mp3?alt=media&token=5b174d4c-be09-417c-9fb8-b384f3ce0ec2",
-      song: require("../../../assets/audio/BIGBANG-BADBOYMV.mp3"),
-    },
-    {
-      id: 3,
-      title: "Something is Going On",
-      artist: "Godmode",
-      artwork: require("../../../assets/images/img3.jpg"),
-      url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FSomething%20is%20Going%20On%20-%20Godmode.mp3?alt=media&token=ecf0d5c5-bc93-48c3-9046-077638d12cfd",
-      song: require("../../../assets/audio/BIGBANG-TONIGHTMV.mp3"),
-    },
-    {
-      id: 4,
-      title: "Book The Rental Wit It",
-      artist: "RAGE",
-      artwork: require("../../../assets/images/img4.jpg"),
-      url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FBook%20The%20Rental%20Wit%20It%20-%20RAGE.mp3?alt=media&token=6f76a691-fd9c-4057-ac0a-0e39104e865e",
-      song: require("../../../assets/audio/BIGBANG-LOVESONGMV.mp3"),
-    },
-    {
-      id: 5,
-      title: "Crimson Fly",
-      artist: "Huma-Huma",
-      artwork: require("../../../assets/images/img5.jpg"),
-      url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FCrimson%20Fly%20-%20Huma-Huma.mp3?alt=media&token=b2d30b27-286e-4d7d-82ad-1bdfa76a4058",
-      song: require("../../../assets/audio/tacudicungnhau.mp3"),
-    },
-    {
-      id: 6,
-      title: "Chúng ta không là của nhau",
-      artist: "Sơn Tòng",
-      artwork: require("../../../assets/images/sontungmtp.webp"),
-      url: "https://firebasestorage.googleapis.com/v0/b/spotify-clone-7a2ef.appspot.com/o/Ringtone%2FAudio%2FCrimson%20Fly%20-%20Huma-Huma.mp3?alt=media&token=b2d30b27-286e-4d7d-82ad-1bdfa76a4058",
-      song: require("../../../assets/audio/ChungTaKhongThuocVeNhau-SonTungMTP-4528181.mp3"),
-    },
-  ];
+  const { dataPlaySongs, storeIndexSong } = useSelector((state) => state);
 
   const [songIndex, setSongIndex] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
@@ -87,7 +37,9 @@ const PlayerMusic = (props) => {
   const [isRepeat, setRepeat] = useState(true);
 
   async function createSound(data, index, callback) {
-    const { sound } = await Audio.Sound.createAsync({uri:`http://192.168.1.4:8000/${data[index].dir}`});
+    const { sound } = await Audio.Sound.createAsync({
+      uri: `http://192.168.0.105:8000/${data[index].dir}`,
+    });
     setSound(sound);
 
     if (typeof callback == "function") {
@@ -100,10 +52,18 @@ const PlayerMusic = (props) => {
   };
 
   useEffect(() => {
+    console.log("dataPlaySong : ", dataPlaySongs);
     createSound(dataPlaySongs, songIndex, (newSound) => {
-      newSound
-        .getStatusAsync()
-        .then((result) => setDuration(result.durationMillis));
+      newSound.playAsync();
+      setPlaying(true);
+      if (storeIndexSong) {
+        setSongIndex(storeIndexSong);
+      }
+      // newSound
+
+      //   .getStatusAsync()
+      //   .then((result) => {
+      //     setDuration(result.durationMillis)});
     });
   }, [dataPlaySongs]);
 
@@ -166,12 +126,11 @@ const PlayerMusic = (props) => {
           setDuration(result.durationMillis);
           setPosition(result.positionMillis);
           if (result.didJustFinish) {
-
             if (result.isLooping) {
               return;
             }
 
-            if(songIndex < dataPlaySongs.length-1){
+            if (songIndex < dataPlaySongs.length - 1) {
               setPlaying(false);
               setSongIndex(songIndex + 1);
               setPosition(0);
@@ -179,11 +138,10 @@ const PlayerMusic = (props) => {
                 newSound.playAsync();
               });
               setPlaying(true);
-            }else{
+            } else {
               setPosition(0);
               setPlaying(false);
             }
-           
           }
         });
       }, 500);
@@ -220,19 +178,39 @@ const PlayerMusic = (props) => {
     return convert(parseInt((seconds / 60) % 60)) + ":" + convert(seconds % 60);
   }
 
+  const formatNumber = (number) => {
+    return convertSeconds((number / 1000).toFixed(0));
+  };
+
+  const displayDuration = (number) => {
+    return isNaN(number) ? "--:--" : formatNumber(number);
+  };
+
   const onHandlerRepeat = () => {
     setRepeat((repeat) => !repeat);
     sound.setIsLoopingAsync(isRepeat);
   };
-  // console.log('sount : ', dataPlaySongs[songIndex]);
+  const onHanderBack = () => {
+    props.navigation.goBack();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.maincontainer}>
+        <Icon
+          style={styles.iconBack}
+          name="arrow-left"
+          size={30}
+          color="black"
+          onPress={onHanderBack}
+        />
         <Animated.View style={styles.mainImageWrapper}>
           <View style={[styles.imageWrapper, styles.elevation]}>
             <Image
               style={styles.musicImage}
-              source={{uri:`http://192.168.1.4:8000/${dataPlaySongs[songIndex].cover}`}}
+              source={{
+                uri: `http://192.168.0.105:8000/${dataPlaySongs[songIndex].cover}`,
+              }}
             />
           </View>
         </Animated.View>
@@ -283,11 +261,9 @@ const PlayerMusic = (props) => {
 
         {/* music progress durations */}
         <View style={styles.progressLevelDuration}>
+          <Text style={styles.progressLabelText}>{formatNumber(position)}</Text>
           <Text style={styles.progressLabelText}>
-            {convertSeconds((position / 1000).toFixed(0))}
-          </Text>
-          <Text style={styles.progressLabelText}>
-            {convertSeconds((duration / 1000).toFixed(0))}
+            {displayDuration(duration)}
           </Text>
         </View>
         {/* music controls */}
