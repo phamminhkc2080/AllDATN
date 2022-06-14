@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { gettopsongs, getcommanedsongs } from "../../redux/actions/songs";
 import { gettopartists } from "../../redux/actions/artists";
 import { getcategories } from "../../redux/actions/categories";
+import { TITLE_CATEGORIES, TITLE_POPULAR_SONGS, TITLE_RECOMMENDED_SONGS, TITLE_TOP_ARTISTS } from "../../constansts/common";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -55,22 +56,22 @@ export default function HomeScreen({ navigation }) {
 
       <ScrollView>
         <PopularSongs
-          title="Recommended For You"
+          title={TITLE_RECOMMENDED_SONGS}
           data={dataRecommendedSongs}
           navigation={navigation}
         />
         <PopularSongs
-          title="Popular song"
+          title={TITLE_POPULAR_SONGS}
           data={dataTopSongs}
           navigation={navigation}
         />
         <PopularSongs
-          title="Top artists"
+          title={TITLE_TOP_ARTISTS}
           data={dataTopArtists}
           navigation={navigation}
         />
         <PopularSongs
-          title="Categories"
+          title={TITLE_CATEGORIES}
           data={dataCategories}
           navigation={navigation}
         />

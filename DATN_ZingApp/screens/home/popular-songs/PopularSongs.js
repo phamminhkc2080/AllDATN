@@ -10,22 +10,29 @@ import {
 } from "react-native";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  TITLE_ALBUMS,
+  TITLE_CATEGORIES,
+  TITLE_POPULAR_SONGS,
+  TITLE_RECOMMENDED_SONGS,
+} from "../../../constansts/common";
 import { getDataPlaySongs, indexSong } from "../../../redux/actions/songs";
 
 const KEY_TYPE = {
   TOP_SONGS: "topSongs",
   TOP_ARTISTS: "topArtists",
   TOP_CATEGORIES: "topCategories",
+  ALBUM_SONGS: "albumSongs",
 };
 
 const { width, height } = Dimensions.get("window");
 
 export default function PopularSongs(props) {
-
   const dispatch = useDispatch();
-  const {storeIndexSong} = useSelector(state=>state)
+  const { storeIndexSong, dataPlaySongs } = useSelector((state) => state);
   const mapKey = (item) => {
+    console.log("iditem : ", item);
     if (item.idSong) {
       return KEY_TYPE.TOP_SONGS;
     }
@@ -37,39 +44,59 @@ export default function PopularSongs(props) {
     if (item.idCategoris) {
       return KEY_TYPE.TOP_CATEGORIES;
     }
+
+    if (item.idAlbum) {
+      return KEY_TYPE.ALBUM_SONGS;
+    }
+  };
+  const handlerGetKey = (item) => {
+    if (props.title === "Recommended For You") {
+      return item.idSong;
+    } else if (props.title === "Popular song") {
+      return item.idSong;
+    } else if (props.title === "Top artists") {
+      return item.idArtist;
+    } else if (props.title === "Categories") {
+      return item.idCategoris;
+    } else if (props.title === "Album") {
+      return item.idAlbum;
+    }
   };
 
   const handleSongAndNavigate = (screenName, items) => {
-    if (screenName === "PlayerMusic") {
-      dispatch(getDataPlaySongs(items));
-      // console.log('songs : ',songs);
-    }
-    props.navigation.navigate(screenName,items);
+    console.log("Hi GUys 1");
+    props.navigation.navigate(screenName, items);
   };
+
   const handlerIndexSong = (index) => {
-    //  console.log('indexPo : ', index)
     dispatch(indexSong(index));
   };
 
-  const onHandlerPlaySong = (item, index) => {
-    const keyType = mapKey(item);
+  const onHandlerPlaySong = (items, index) => {
+    console.log("items : ", items);
+    const keyType = mapKey(items[0]);
 
-    switch (keyType) {
-      case KEY_TYPE.TOP_SONGS:
-        {
-          handleSongAndNavigate("PlayerMusic", [item]);
-          handlerIndexSong(index);
-        }
-
+    switch (props.title) {
+      case TITLE_POPULAR_SONGS:
+        console.log("hi guys songs!!");
+        dispatch(getDataPlaySongs(items));
+        handlerIndexSong(index);
+        props.navigation.navigate("PlayerMusic");
         break;
 
-      case KEY_TYPE.TOP_ARTISTS:
-        handleSongAndNavigate("ArtistsDetail", item);
+      case TITLE_RECOMMENDED_SONGS:
+        console.log("hi guys artists!!");
+        handleSongAndNavigate("ArtistsDetail", items[index]);
         break;
 
-      case KEY_TYPE.TOP_CATEGORIES:
-        handleSongAndNavigate("CategoriesDetails", item);
+      case TITLE_CATEGORIES:
+        console.log("hi guys category!!");
+        handleSongAndNavigate("CategoriesDetails", items[index]);
 
+        break;
+      case TITLE_ALBUMS:
+        console.log("hi guys!!");
+        handleSongAndNavigate("CategoriesDetails", items[index]);
         break;
 
       default:
@@ -94,14 +121,15 @@ export default function PopularSongs(props) {
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         {props.data.map((item, index) => (
           <TouchableWithoutFeedback
-            key={item.idSong || item.idArtist || item.idCategoris}
-            onPress={() => onHandlerPlaySong(item, index)}
+            key={handlerGetKey(item)}
+            onPress={() => onHandlerPlaySong(props.data, index)}
+            // onPress={() => onHandlerPlaySong(item, index)}
           >
             <View style={styles.containerItem}>
               <Surface style={styles.surface}>
                 <ImageBackground
                   source={{
-                    uri: `http://192.168.0.105:8000/${item.cover || item.image}`,
+                    uri: `http://172.20.10.2:8000/${item.cover || item.image}`,
                   }}
                   style={styles.img}
                 ></ImageBackground>

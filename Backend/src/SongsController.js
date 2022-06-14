@@ -30,10 +30,10 @@ const getTopSongs = async (req, res) => {
 const getSongsCategory = async (req, res) => {
   try {
     if (req.query.id) {
-      const query = `Select Songs.idSong,Songs.name as namesong,Songs.cover,Songs.dir,Artist.name as nameartists from Artist 
+      const query = `Select Songs.idSong,Songs.name as namesong,Songs.cover,Songs.dir,Artist.name as nameartists,Songs.likes from Artist 
                       inner join Songs on Artist.idArtist = Songs.idArtist 
                       inner join Categoris on Songs.idCategoris = Categoris.idCategoris 
-                      where Categoris.idCategoris=${req.query.id}`;
+                      where Categoris.idCategoris=${req.query.id} order by Songs.likes desc`;
 
       const getSongsCategory = await dao.sequelize.query(query, {
         raw: true,
@@ -84,7 +84,7 @@ const getSongsArtists = async (req, res) => {
 const getSongsSearch = async (req, res) => {
   try {
     if (req.query.search) {
-      const query = `select top (3) Songs.idSong,Songs.name as namesong,Songs.cover,Songs.dir,Artist.name as nameartists  
+      const query = `select top (5) Songs.idSong,Songs.name as namesong,Songs.cover,Songs.dir,Artist.name as nameartists  
       from Artist inner join Songs on Artist.idArtist = Songs.idArtist 
       where Songs.name like '%${req.query.search}%' `;
 
@@ -100,6 +100,23 @@ const getSongsSearch = async (req, res) => {
     return res.status(500).send(error);
   }
 };
+const getSongsAlbum = async (req, res) => {
+  try {
+    if (req.query.id) {
+      const query = `select * from Songs where idAlbum = ${req.query.id}`;
+
+      const getSongsAlbum = await dao.sequelize.query(query, {
+        raw: true,
+        nest: true,
+      });
+
+      return res.status(200).send(getSongsAlbum);
+    }
+    return res.status(200).send([]);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
 
 module.exports = {
   getAllSongs,
@@ -109,5 +126,6 @@ module.exports = {
   getRecommended,
   getSongsCategory,
   getSongsArtists,
-  getSongsSearch
+  getSongsSearch,
+  getSongsAlbum
 };

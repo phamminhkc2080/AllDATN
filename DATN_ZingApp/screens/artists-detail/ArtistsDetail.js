@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,45 +6,76 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  FlatList
+  FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useDispatch,useSelector } from "react-redux";
-import { getDataPlaySongs,getSongArtists } from "../../redux/actions/songs";
+import { useDispatch, useSelector } from "react-redux";
+import { getDataPlaySongs, getSongArtists } from "../../redux/actions/songs";
 import { request } from "../utils/Request";
 import Song from "../home/songs/Song";
+import PopularSongs from "../home/popular-songs/PopularSongs";
 
 const { width, height } = Dimensions.get("screen");
 
 export default function ArtistsDetail(props) {
-  let dataAritsts = props.route.params.items;
-
-  
+  let dataAritsts = props.route.params;
 
   const dispatch = useDispatch();
-  const { dataPlaySongs,dataSongArtists } = useSelector((state) => state);
-  useEffect(()=>{
+  const { dataPlaySongs, dataSongArtists } = useSelector((state) => state);
+  const [dataAblum, setDataAlbum] = useState([]);
+  useEffect(() => {
     request
-      .get("/songs/get-artists-songs" + (dataAritsts.idArtist ? "?id=" + dataAritsts.idArtist : ""))
+      .get(
+        "/albums/get-albums" +
+          (dataAritsts.idArtist ? "?id=" + dataAritsts.idArtist : "")
+      )
       .then((result) => {
-        dispatch(getSongArtists(result.data));
+        if (result?.data) {
+          setDataAlbum(result?.data);
+        } else {
+          console.error("result.data not valid!");
+        }
       })
       .catch((error) => console.error(error));
-  },[])
+
+    request
+      .get(
+        "/songs/get-artists-songs" +
+          (dataAritsts.idArtist ? "?id=" + dataAritsts.idArtist : "")
+      )
+      .then((result) => {
+        dispatch(getSongArtists(result?.data));
+      })
+      .catch((error) => console.error(error));
+  }, []);
 
   const onHanderBack = () => {
     props.navigation.goBack();
   };
 
-  
+  function nFormatter(num) {
+    if (num >= 1000000000) {
+      return (num / 1000000000).toFixed(1).replace(/\.0$/, "") + "G";
+    }
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+    }
+    return num;
+  }
+
+  console.log(dataAblum);
+
   return (
     <View style={styles.container}>
       <View>
         <Image
           resizeMode="cover"
           style={styles.imgArtists}
-          source={{ uri: `http://192.168.0.105:8000/${dataAritsts.image}` }}
+          source={{ uri: `http://172.20.10.2:8000/${dataAritsts.image}` }}
         />
         <LinearGradient
           colors={["rgba(0,0,0,0.1)", "black"]}
@@ -72,7 +103,9 @@ export default function ArtistsDetail(props) {
           </View>
 
           <View>
-            <Text style={styles.textFollow}>{dataAritsts.follows} Follow</Text>
+            <Text style={styles.textFollow}>
+              {nFormatter(dataAritsts.follows)} Follow
+            </Text>
           </View>
 
           <View style={styles.containerButton}>
@@ -85,7 +118,13 @@ export default function ArtistsDetail(props) {
           </View>
         </View>
       </View>
-
+      <View>
+        <PopularSongs
+          title="Album"
+          data={dataAblum}
+          navigation={props.navigation}
+        />
+      </View>
       <View style={styles.containerTitle}>
         <Text style={styles.title}>Songs</Text>
         <View style={styles.containerIconList}>
@@ -97,14 +136,22 @@ export default function ArtistsDetail(props) {
           />
         </View>
       </View>
-      <FlatList 
-      data={dataSongArtists}
-      keyExtractor={item=>item.idSong}
-      renderItem={({item,index})=>{
-          
-       return <Song item={item} index = {index} navigation={props.navigation} screenName = 'ArtistsDetail'/>
-      }}
-      />
+      <View style={{ paddingLeft: 15 }}>
+        <FlatList
+          data={dataSongArtists}
+          keyExtractor={(item) => item.idSong}
+          renderItem={({ item, index }) => {
+            return (
+              <Song
+                item={item}
+                index={index}
+                navigation={props.navigation}
+                screenName="ArtistsDetail"
+              />
+            );
+          }}
+        />
+      </View>
     </View>
   );
 }
@@ -123,7 +170,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 30,
   },
   containerTitle: {
-    marginTop: 30,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

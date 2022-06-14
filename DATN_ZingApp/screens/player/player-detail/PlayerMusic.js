@@ -20,14 +20,21 @@ import { AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import {
+  durationSound,
+  positionSound,
+  setShowHide,
+} from "../../../redux/actions/playsound";
 
 const { width, height } = Dimensions.get("window");
 
 const PlayerMusic = (props) => {
   const dispatch = useDispatch();
-  const { dataPlaySongs, storeIndexSong } = useSelector((state) => state);
+  const { dataPlaySongs, storeIndexSong, statusShowHide, indexSong } = useSelector(
+    (state) => state
+  );
 
-  const [songIndex, setSongIndex] = useState(0);
+  const [songIndex, setSongIndex] = useState(indexSong || 0);
   const [isPlaying, setPlaying] = useState(false);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [sound, setSound] = useState();
@@ -36,9 +43,11 @@ const PlayerMusic = (props) => {
   const [isSliding, setSliding] = useState(false);
   const [isRepeat, setRepeat] = useState(true);
 
-  async function createSound(data, index, callback) {
+  async function createSound(songs, index, callback) {
+    console.log('data = ', songs)
+    console.log('index = ', index)
     const { sound } = await Audio.Sound.createAsync({
-      uri: `http://192.168.0.105:8000/${data[index].dir}`,
+      uri: `http://172.20.10.2:8000/${songs[index].dir}`,
     });
     setSound(sound);
 
@@ -53,9 +62,11 @@ const PlayerMusic = (props) => {
 
   useEffect(() => {
     console.log("dataPlaySong : ", dataPlaySongs);
+    console.log("index : ", storeIndexSong);
     createSound(dataPlaySongs, songIndex, (newSound) => {
       newSound.playAsync();
       setPlaying(true);
+      console.log("storeIndexSong", storeIndexSong)
       if (storeIndexSong) {
         setSongIndex(storeIndexSong);
       }
@@ -190,8 +201,12 @@ const PlayerMusic = (props) => {
     setRepeat((repeat) => !repeat);
     sound.setIsLoopingAsync(isRepeat);
   };
+
   const onHanderBack = () => {
-    props.navigation.goBack();
+    dispatch(setShowHide(true));
+    dispatch(positionSound(position));
+    dispatch(durationSound(duration));
+    props.navigation.navigate("TabsNavigation");
   };
 
   return (
@@ -206,21 +221,21 @@ const PlayerMusic = (props) => {
         />
         <Animated.View style={styles.mainImageWrapper}>
           <View style={[styles.imageWrapper, styles.elevation]}>
-            <Image
+            {dataPlaySongs[songIndex] ? <Image
               style={styles.musicImage}
               source={{
-                uri: `http://192.168.0.105:8000/${dataPlaySongs[songIndex].cover}`,
+                uri: `http://172.20.10.2:8000/${dataPlaySongs[songIndex]?.cover}`,
               }}
-            />
+            /> : <Text>Hello</Text>}
           </View>
         </Animated.View>
         {/* Song Content */}
         <View>
           <Text style={[styles.songContent, styles.songTitle]}>
-            {dataPlaySongs[songIndex].namesong}
+            {dataPlaySongs[songIndex]?.namesong}
           </Text>
           <Text style={[styles.songContent, styles.songArtist]}>
-            {dataPlaySongs[songIndex].nameartists}
+            {dataPlaySongs[songIndex]?.nameartists}
           </Text>
         </View>
 

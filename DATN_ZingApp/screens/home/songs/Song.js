@@ -29,19 +29,21 @@ const Song = ({ item, navigation, index, screenName }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const handlerGetData = () => {
     if (screenName === "TrendingSongs") {
-      console.log('dataSongCategory : ',dataSongCategory)
-
       dispatch(getDataPlaySongs(dataSongCategory));
     } else if (screenName === "ArtistsDetail") {
       dispatch(getDataPlaySongs(dataSongArtists));
     } else if (screenName === "ResultSearch") {
       dispatch(getDataPlaySongs(dataSongsSearch));
+    } if (screenName === "CatgoriesDetails") {
+      console.log('dataSongCategory : ',dataSongCategory)
+
+      dispatch(getDataPlaySongs(dataSongCategory));
     }
   };
   const playSong = () => {
+    dispatch(indexSong(index));
     navigation.navigate("PlayerMusic");
 
-    dispatch(indexSong(index));
   };
 
   const openModal = () => {
@@ -56,6 +58,8 @@ const Song = ({ item, navigation, index, screenName }) => {
     handlerGetData();
   }, [dataPlaySongs]);
 
+  console.log('dataPlaySongs : ', dataPlaySongs)
+
   return (
     <View>
       <Modal
@@ -68,7 +72,7 @@ const Song = ({ item, navigation, index, screenName }) => {
           <View style={styles.modal}>
             <Surface style={styles.surface}>
               <Image
-                source={{ uri: `http://192.168.0.105:8000/${item.cover}` }}
+                source={{ uri: `http://172.20.10.2:8000/${item.cover}` }}
                 style={styles.modalImg}
               />
             </Surface>
@@ -102,10 +106,12 @@ const Song = ({ item, navigation, index, screenName }) => {
         </View>
       </Modal>
 
-      <TouchableWithoutFeedback style={styles.songContainer} onPress={playSong}>
+      <TouchableWithoutFeedback style={styles.songContainer}
+       onPress={playSong}
+       >
         <View style={{ flexDirection: "row", paddingBottom: 10 }}>
           <Image
-            source={{ uri: `http://192.168.0.105:8000/${item.cover}` }}
+            source={{ uri: `http://172.20.10.2:8000/${item.cover}` }}
             style={styles.img}
           />
           <View style={styles.dataContainer}>
@@ -137,6 +143,7 @@ const styles = StyleSheet.create({
   songContainer: {
     width: width,
     height: 70,
+    padding:10
   },
   img: {
     height: 70,

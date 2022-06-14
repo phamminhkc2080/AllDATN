@@ -12,6 +12,7 @@ router.get('/get-category-songs',applicantController.getSongsCategory)
 router.post('/uploadFile', applicantController.upload);
 router.get('/get-artists-songs',applicantController.getSongsArtists)
 router.get('/get-songs-search',applicantController.getSongsSearch)
+router.get('/get-songs-albums',applicantController.getSongsAlbum)
 
 // export router to use in index file
 module.exports = router;

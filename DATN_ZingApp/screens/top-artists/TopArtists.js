@@ -16,7 +16,7 @@ import { request } from "../utils/Request";
 export default function TopArtists(props) {
   const [dataAllArtists, setDataAllArtists] = useState([]);
   const gotoArtitsDetail = (items) => {
-    props.navigation.navigate("ArtistsDetail",{items});
+    props.navigation.navigate("ArtistsDetail",items);
   };
 
   useEffect(() => {
@@ -27,7 +27,20 @@ export default function TopArtists(props) {
       })
       .catch((error) => console.error(error));
   }, []);
-  console.log(dataAllArtists);
+  
+  function nFormatter(num) {
+    if (num >= 1000000000) {
+       return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
+    }
+    if (num >= 1000000) {
+       return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (num >= 1000) {
+       return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    return num;
+}
+
   return (
     <SafeAreaView style={styles.constainer}>
       <View style={styles.searchSection}>
@@ -62,7 +75,7 @@ export default function TopArtists(props) {
                   <Image
                     style={styles.imgArtists}
                     source={{
-                      uri: `http://192.168.0.105:8000/${item.item.image}`,
+                      uri: `http://172.20.10.2:8000/${item.item.image}`,
                     }}
                   />
                 </View>
@@ -74,7 +87,7 @@ export default function TopArtists(props) {
                   >
                     {item.item.name}
                   </Text>
-                  <Text style={styles.textFollow}>{item.item.follows}</Text>
+                  <Text style={styles.textFollow}>{nFormatter(item.item.follows)} Follows</Text>
                 </View>
               </TouchableOpacity>
               <View style={styles.containerFollow}>

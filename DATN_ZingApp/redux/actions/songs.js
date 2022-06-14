@@ -5,7 +5,8 @@ import {
   GET_SONG_OF_CATEGORY,
   GET_SONG_INDEX,
   GET_SONG_ARTISTS,
-  GET_SONG_SEARCH
+  GET_SONG_SEARCH,
+  SET_SHOW_HIDE
 } from "../constants/types";
 
 export const gettopsongs = (dataTopSong) => {
@@ -56,4 +57,6 @@ export const getSongSearch = (songSearch) => {
     payload: songSearch,
   };
 };
+
+
 

@@ -1,36 +1,56 @@
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { StyleSheet, Text, View, Image, TouchableOpacity ,FlatList} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import Song from "../home/songs/Song";
 import { useDispatch, useSelector } from "react-redux";
-import { getDataPlaySongs } from "../../redux/actions/songs";
+import { dataSongsOfCategory } from "../../redux/actions/songs";
 import { request } from "../utils/Request";
 
 export default function CategoriesDetails(props) {
   const dispatch = useDispatch();
-  const { dataPlaySongs } = useSelector((state) => state);
+  const { dataSongCategory } = useSelector((state) => state);
 
-  let data = props.route.params.items;
-  console.log('item : ', props.route.params.items)
-  
+  let data = props.route.params;
+  // const onHandlerGetData=(data)=>{
+  //   if(data){
+  //     return props.route.params;
+  //   }else{
+  //     return [];
+  //   }
+  // }
+
   useEffect(() => {
     request
-      .get("/songs/get-category-songs" + (data.idCategoris ? "?id=" + data.idCategoris : "?id="))
+      .get(
+        "/songs/get-category-songs" +
+          (data.idCategoris ? "?id=" + data.idCategoris : "?id=")
+      )
       .then((result) => {
-        if(result?.data){
-          dispatch(getDataPlaySongs(result.data));
-        }else{
-          console.error('result.data not valid!')
+        if (result?.data) {
+          dispatch(dataSongsOfCategory(result.data));
+        } else {
+          console.error("result.data not valid!");
         }
       })
       .catch((error) => console.error(error));
   }, []);
+
   return (
     <View style={styles.container}>
-      {/* <View style={styles.header}>
+      <View style={styles.header}>
         <Surface style={styles.surface}>
-          <Image source={{uri:`http://192.168.0.105:8000/${data.cover}`}} style={styles.img} />
+          <Image
+            source={{ uri: `http://172.20.10.2:8000/${data.cover}` }}
+            style={styles.img}
+          />
         </Surface>
 
         <Text style={styles.title}>{data.name}</Text>
@@ -43,14 +63,17 @@ export default function CategoriesDetails(props) {
         </View>
       </View>
 
-       <Text style={styles.text2}>Songs</Text>
-       <FlatList
-        data={dataPlaySongs}
-        renderItem={({ item,index }) => {
+      <Text style={styles.text2}>Songs</Text>
+      <FlatList
+        data={dataSongCategory}
+        renderItem={({ item, index }) => {
           return (
             <View style={{ paddingHorizontal: 10 }}>
-              <Song item={item} navigation={navigation} index = {index}/>
-              {/* {console.log(item)} */}
+              <Song item={item} navigation={navigation} index={index} screenName = 'CatgoriesDetails'/>
+            </View>
+          );
+        }}
+      />
     </View>
   );
 }

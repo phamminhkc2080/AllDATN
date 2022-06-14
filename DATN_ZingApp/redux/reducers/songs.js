@@ -40,6 +40,7 @@ export const reducerRecommenedSongs = (
 export const reducerPlaySongs = (state = dataPlaySong, action) => {
   switch (action.type) {
     case DATA_PLAY_SONGS:
+      console.log('action.payload = ', action.payload)
       return action.payload;
     default:
       return state;
@@ -81,3 +82,5 @@ export const reducerSongsSearch = (state = dataSongsSearch, action) => {
       return state;
   }
 };
+
+

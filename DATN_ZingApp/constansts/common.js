@@ -1,0 +1,5 @@
+export  const TITLE_POPULAR_SONGS = 'Popular song'
+export  const TITLE_RECOMMENDED_SONGS = 'Recommended For You'
+export  const TITLE_TOP_ARTISTS = 'Top artists'
+export  const TITLE_CATEGORIES = 'Categories'
+export  const TITLE_ALBUMS = 'Album'
