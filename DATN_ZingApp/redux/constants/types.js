@@ -23,6 +23,9 @@ export const SOUND = 'SOUND'
 export const IS_SLIDING = 'IS_SLIDING'
 export const IS_REPEAT = 'IS_REPEAT'
 
+//User
+export const SIGN_IN = 'SIGN_IN'
+
 
 
 

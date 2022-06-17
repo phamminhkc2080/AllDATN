@@ -14,17 +14,14 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Surface } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { getDataPlaySongs, indexSong } from "../../../redux/actions/songs";
+import { request } from "../../utils/Request";
 
 const { width, height } = Dimensions.get("window");
 
 const Song = ({ item, navigation, index, screenName }) => {
   const dispatch = useDispatch();
-  const {
-    dataSongCategory,
-    dataSongArtists,
-    dataPlaySongs,
-    dataSongsSearch,
-  } = useSelector((state) => state);
+  const { dataSongCategory, dataSongArtists, dataPlaySongs, dataSongsSearch } =
+    useSelector((state) => state);
 
   const [modalVisible, setModalVisible] = useState(false);
   const handlerGetData = () => {
@@ -34,17 +31,25 @@ const Song = ({ item, navigation, index, screenName }) => {
       dispatch(getDataPlaySongs(dataSongArtists));
     } else if (screenName === "ResultSearch") {
       dispatch(getDataPlaySongs(dataSongsSearch));
-    } if (screenName === "CatgoriesDetails") {
-      console.log('dataSongCategory : ',dataSongCategory)
-
+    }
+    if (screenName === "CatgoriesDetails") {
       dispatch(getDataPlaySongs(dataSongCategory));
     }
   };
   const playSong = () => {
-    dispatch(indexSong(index));
-    navigation.navigate("PlayerMusic");
-
+    if(item){
+      onUpdateViewSong(item)
+      dispatch(indexSong(index));
+      navigation.navigate("PlayerMusic");
+    }
+   
   };
+
+  const onUpdateViewSong=(item)=>{
+    request.put('/songs/update-view-song',{
+       id:item.idSong
+    })
+  }
 
   const openModal = () => {
     setModalVisible(true);
@@ -58,8 +63,6 @@ const Song = ({ item, navigation, index, screenName }) => {
     handlerGetData();
   }, [dataPlaySongs]);
 
-  console.log('dataPlaySongs : ', dataPlaySongs)
-
   return (
     <View>
       <Modal
@@ -72,7 +75,7 @@ const Song = ({ item, navigation, index, screenName }) => {
           <View style={styles.modal}>
             <Surface style={styles.surface}>
               <Image
-                source={{ uri: `http://172.20.10.2:8000/${item.cover}` }}
+                source={{ uri: `http://192.168.1.4:8000/${item.cover}` }}
                 style={styles.modalImg}
               />
             </Surface>
@@ -106,12 +109,10 @@ const Song = ({ item, navigation, index, screenName }) => {
         </View>
       </Modal>
 
-      <TouchableWithoutFeedback style={styles.songContainer}
-       onPress={playSong}
-       >
+      <TouchableWithoutFeedback style={styles.songContainer} onPress={playSong}>
         <View style={{ flexDirection: "row", paddingBottom: 10 }}>
           <Image
-            source={{ uri: `http://172.20.10.2:8000/${item.cover}` }}
+            source={{ uri: `http://192.168.1.4:8000/${item.cover}` }}
             style={styles.img}
           />
           <View style={styles.dataContainer}>
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   songContainer: {
     width: width,
     height: 70,
-    padding:10
+    padding: 10,
   },
   img: {
     height: 70,

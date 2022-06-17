@@ -6,7 +6,7 @@ const file = require('../Server/fileUpload')
 const getTopCategoris = async (req, res) => {
 
     const getTopCategoris= await dao.sequelize.query(
-        `SELECT top(5) * FROM Categoris`, { raw: true, nest: true }
+        `SELECT top(5) * FROM Categories`, { raw: true, nest: true }
     )
     return res.status(200).send(getTopCategoris)
 }
@@ -14,7 +14,7 @@ const getTopCategoris = async (req, res) => {
 const getCategorisTrending = async (req, res) => {
 
     const getCategorisTrending= await dao.sequelize.query(
-        `SELECT top(3) * FROM Categoris`, { raw: true, nest: true }
+        `SELECT top(3) * FROM Categories`, { raw: true, nest: true }
     )
     return res.status(200).send(getCategorisTrending)
 

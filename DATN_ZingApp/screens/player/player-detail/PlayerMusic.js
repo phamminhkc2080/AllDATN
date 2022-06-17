@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,179 +9,90 @@ import {
   Image,
   FlatList,
   Animated,
-  Alert,
 } from "react-native";
 import { Audio } from "expo-av";
 
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useDispatch, useSelector } from "react-redux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
-  durationSound,
-  positionSound,
+  setDurationSound,
+  isPlayingSound,
+  setPositionSound,
+  setRepeat,
   setShowHide,
+  setSliding,
+  soundaction,
 } from "../../../redux/actions/playsound";
+import { indexSong } from "../../../redux/actions/songs";
+import usePlaySound from "../../../hooks/usePlaySound";
+import { SongContext } from "../../../contexts/SongContext";
 
 const { width, height } = Dimensions.get("window");
 
 const PlayerMusic = (props) => {
-  const dispatch = useDispatch();
-  const { dataPlaySongs, storeIndexSong, statusShowHide, indexSong } = useSelector(
-    (state) => state
-  );
-
-  const [songIndex, setSongIndex] = useState(indexSong || 0);
-  const [isPlaying, setPlaying] = useState(false);
-  const scrollX = useRef(new Animated.Value(0)).current;
   const [sound, setSound] = useState();
-  const [duration, setDuration] = useState(0);
-  const [position, setPosition] = useState(0);
-  const [isSliding, setSliding] = useState(false);
-  const [isRepeat, setRepeat] = useState(true);
 
-  async function createSound(songs, index, callback) {
-    console.log('data = ', songs)
-    console.log('index = ', index)
-    const { sound } = await Audio.Sound.createAsync({
-      uri: `http://172.20.10.2:8000/${songs[index].dir}`,
-    });
-    setSound(sound);
+  const dispatch = useDispatch();
+  // const {
+  //   songs,
+  //   index,
+  //   statusShowHide,
+  //   storesound,
+  //   statusSliding,
+  //   isRepeat,
+  //   duration,
+  //   position,
+  //   isPlaying,
+  // } = useSelector((state) => state);
 
-    if (typeof callback == "function") {
-      callback(sound);
-    }
-  }
+  // const [
+  //   gotoPosition,
+  //   onHandlerNext,
+  //   onHandlerBack,
+  //   onPlaySound,
+  //   onHandlerRepeat,
+  // ] = usePlaySound(sound, setSound);
 
-  const onPauseSound = async () => {
-    await sound.pauseAsync();
-  };
+  const { song, songs, songControl } = useContext(SongContext);
+  const {
+    index,
+    isRepeat,
+    isPlaying,
+    isSliding,
+    position,
+    duration,
 
-  useEffect(() => {
-    console.log("dataPlaySong : ", dataPlaySongs);
-    console.log("index : ", storeIndexSong);
-    createSound(dataPlaySongs, songIndex, (newSound) => {
-      newSound.playAsync();
-      setPlaying(true);
-      console.log("storeIndexSong", storeIndexSong)
-      if (storeIndexSong) {
-        setSongIndex(storeIndexSong);
-      }
-      // newSound
+    setPlaying,
+    setSliding,
+    setPosition,
+    setDuration,
 
-      //   .getStatusAsync()
-      //   .then((result) => {
-      //     setDuration(result.durationMillis)});
-    });
-  }, [dataPlaySongs]);
+    setSong,
+    setSongs,
+    setIndex,
+    setShow,
+    setRepeat,
 
-  // useEffect(() => {
-  //   // handle songs from useSelector/redux store
-  // }, [dataPlaySongs]);
+    onHandlerBack,
+    onHandlerNext,
+    onHandlerRepeat,
+    onPauseSound,
+    onPlaySound,
+    gotoPosition
+  } = songControl;
 
-  const onHandlerNext = () => {
-    if (songIndex >= dataPlaySongs.length - 1) {
-      return;
-    }
-    if (sound) {
-      sound.unloadAsync();
-    }
+  // const scrollX = useRef(new Animated.Value(0)).current;
 
-    setSongIndex(songIndex + 1);
-    createSound(dataPlaySongs, songIndex + 1, (newSound) => {
-      newSound.playAsync();
-    });
+  // const [songIndex, setSongIndex] = useState(indexSong || 0);
+  // const [isPlaying, setPlaying] = useState(false);
+  // const [duration, setDuration] = useState(0);
+  // const [position, setPosition] = useState(0);
+  // const [isSliding, setSliding] = useState(false);
+  // const [isRepeat, setRepeat] = useState(true);
 
-    setPlaying(true);
-  };
-
-  const onHandlerBack = () => {
-    if (songIndex <= 0) {
-      return;
-    }
-    if (sound) {
-      sound.unloadAsync();
-    }
-
-    setSongIndex(songIndex - 1);
-    createSound(dataPlaySongs, songIndex - 1, (newSound) => {
-      newSound.playAsync();
-    });
-
-    setPlaying(true);
-  };
-
-  const onPlaySound = async () => {
-    if (isPlaying) {
-      onPauseSound();
-    } else {
-      if (sound) {
-        await sound.playAsync();
-      } else {
-        createSound(dataPlaySongs, songIndex, (newSound) => {
-          newSound.playAsync();
-        });
-      }
-    }
-
-    setPlaying((oldIsClick) => !oldIsClick);
-  };
-
-  useEffect(() => {
-    if (sound && isPlaying && !isSliding) {
-      let interval = setInterval(() => {
-        sound.setOnPlaybackStatusUpdate((result) => {
-          setDuration(result.durationMillis);
-          setPosition(result.positionMillis);
-          if (result.didJustFinish) {
-            if (result.isLooping) {
-              return;
-            }
-
-            if (songIndex < dataPlaySongs.length - 1) {
-              setPlaying(false);
-              setSongIndex(songIndex + 1);
-              setPosition(0);
-              createSound(dataPlaySongs, songIndex + 1, (newSound) => {
-                newSound.playAsync();
-              });
-              setPlaying(true);
-            } else {
-              setPosition(0);
-              setPlaying(false);
-            }
-          }
-        });
-      }, 500);
-      return () => {
-        clearInterval(interval);
-        interval = 0;
-      };
-    }
-  }, [sound, isPlaying, isSliding]);
-
-  const gotoPosition = (pos) => {
-    const checkPlaying = isPlaying;
-
-    if (isPlaying) {
-      setPlaying(false);
-    }
-
-    setPosition(pos);
-
-    if (checkPlaying) {
-      sound.playFromPositionAsync(pos);
-      setPlaying(true);
-    } else {
-      sound.setPositionAsync(pos);
-    }
-    setSliding(false);
-  };
-
-  // converNumber
   function convertSeconds(seconds) {
     var convert = function (x) {
       return x < 10 ? "0" + x : x;
@@ -197,45 +108,51 @@ const PlayerMusic = (props) => {
     return isNaN(number) ? "--:--" : formatNumber(number);
   };
 
-  const onHandlerRepeat = () => {
-    setRepeat((repeat) => !repeat);
-    sound.setIsLoopingAsync(isRepeat);
+  const onBackNavigation = () => {
+    setShow(true)
+    //dispatch(setShowHide(true));
+    // dispatch(setPositionSound(position));
+    // dispatch(setDurationSound(duration));
+    props.navigation.goBack();
   };
 
-  const onHanderBack = () => {
-    dispatch(setShowHide(true));
-    dispatch(positionSound(position));
-    dispatch(durationSound(duration));
-    props.navigation.navigate("TabsNavigation");
-  };
+  // console.log("dataPlaySongsMusic : ", songs);
+  // console.log("storeIndexSongMusic  : ", index);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.maincontainer}>
-        <Icon
-          style={styles.iconBack}
-          name="arrow-left"
-          size={30}
-          color="black"
-          onPress={onHanderBack}
-        />
+        <View style={styles.iconBack}>
+          <Icon
+            name="arrow-left"
+            size={30}
+            color="white"
+            onPress={onBackNavigation}
+          />
+        </View>
+
         <Animated.View style={styles.mainImageWrapper}>
           <View style={[styles.imageWrapper, styles.elevation]}>
-            {dataPlaySongs[songIndex] ? <Image
-              style={styles.musicImage}
-              source={{
-                uri: `http://172.20.10.2:8000/${dataPlaySongs[songIndex]?.cover}`,
-              }}
-            /> : <Text>Hello</Text>}
+            {songs[index] ? (
+              <Image
+                style={styles.musicImage}
+                source={{
+                  uri: `http://192.168.1.4:8000/${songs[index]?.cover}`,
+                }}
+              />
+            ) : (
+              <Text>Hello</Text>
+            )}
           </View>
         </Animated.View>
+        
         {/* Song Content */}
         <View>
           <Text style={[styles.songContent, styles.songTitle]}>
-            {dataPlaySongs[songIndex]?.namesong}
+            {songs[index]?.namesong}
           </Text>
           <Text style={[styles.songContent, styles.songArtist]}>
-            {dataPlaySongs[songIndex]?.nameartists}
+            {songs[index]?.nameartists}
           </Text>
         </View>
 
@@ -276,7 +193,9 @@ const PlayerMusic = (props) => {
 
         {/* music progress durations */}
         <View style={styles.progressLevelDuration}>
-          <Text style={styles.progressLabelText}>{formatNumber(position)}</Text>
+          <Text style={styles.progressLabelText}>
+            {formatNumber(position)}
+          </Text>
           <Text style={styles.progressLabelText}>
             {displayDuration(duration)}
           </Text>
@@ -287,7 +206,7 @@ const PlayerMusic = (props) => {
             <Ionicons name="shuffle-outline" size={35} color="#FFD369" />
           </TouchableOpacity>
 
-          {songIndex <= 0 ? (
+          {index <= 0 ? (
             <Ionicons name="play-skip-back-outline" size={35} color="#eee" />
           ) : (
             <TouchableOpacity onPress={onHandlerBack}>
@@ -306,7 +225,7 @@ const PlayerMusic = (props) => {
               color="#FFD369"
             />
           </TouchableOpacity>
-          {songIndex >= dataPlaySongs.length - 1 ? (
+          {index >= songs.length - 1 ? (
             <Ionicons name="play-skip-forward-outline" size={35} color="#eee" />
           ) : (
             <TouchableOpacity onPress={onHandlerNext}>
@@ -319,7 +238,7 @@ const PlayerMusic = (props) => {
           )}
           <TouchableOpacity onPress={onHandlerRepeat}>
             <MaterialIcons
-              name={isRepeat ? "repeat" : "repeat-one"}
+              name={isRepeat ? "repeat-one" : "repeat"}
               size={30}
               color="#FFD369"
             />
@@ -352,6 +271,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "80%",
   },
+  // iconBack: {
+  //     marginRight:360,
+  //     marginBottom:40
+  // },
   mainImageWrapper: {
     width: width,
     justifyContent: "center",

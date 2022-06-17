@@ -41,7 +41,6 @@ export default function ResultsSearch({ navigation }) {
   useEffect(() => {
     handlerTextSearch();
   }, [textSearch]);
-  console.log(dataSongsSearch);
   return (
     <View style={styles.container}>
       <SafeAreaView>

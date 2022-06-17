@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView, SafeAreaView,Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  SafeAreaView,
+  Dimensions,
+} from "react-native";
 import { request } from "../utils/Request";
 import HeaderHome from "./header/HeaderHome";
 import PopularSongs from "./popular-songs/PopularSongs";
@@ -7,7 +13,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { gettopsongs, getcommanedsongs } from "../../redux/actions/songs";
 import { gettopartists } from "../../redux/actions/artists";
 import { getcategories } from "../../redux/actions/categories";
-import { TITLE_CATEGORIES, TITLE_POPULAR_SONGS, TITLE_RECOMMENDED_SONGS, TITLE_TOP_ARTISTS } from "../../constansts/common";
+import {
+  TITLE_CATEGORIES,
+  TITLE_POPULAR_SONGS,
+  TITLE_RECOMMENDED_SONGS,
+  TITLE_TOP_ARTISTS,
+} from "../../constansts/common";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -47,8 +58,6 @@ export default function HomeScreen({ navigation }) {
       })
       .catch((error) => console.error(error));
   }, []);
-
-
 
   return (
     <View style={styles.container}>

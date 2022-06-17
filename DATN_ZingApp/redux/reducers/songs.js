@@ -12,7 +12,7 @@ const dataTopSongs = [];
 const dataRecommendedSongs = [];
 const dataPlaySong = [];
 const dataSongOfCategory = [];
-const indexSong = "";
+const indexSong = 0;
 const dataSongsArtist = [];
 const dataSongsSearch = [];
 
@@ -40,7 +40,6 @@ export const reducerRecommenedSongs = (
 export const reducerPlaySongs = (state = dataPlaySong, action) => {
   switch (action.type) {
     case DATA_PLAY_SONGS:
-      console.log('action.payload = ', action.payload)
       return action.payload;
     default:
       return state;

@@ -11,6 +11,10 @@ import ProfileScreen from "../profile/ProfileScreen";
 import ArtistsDetail from "../artists-detail/ArtistsDetail";
 import PopularSongs from "../home/popular-songs/PopularSongs";
 import Song from "../home/songs/Song";
+import SignIn from "../user/SignIn";
+import ListItem from "../components/ListItem";
+import MiniPlayMusic from "../player/MiniPlayMusic";
+import Router from "./Router";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +36,11 @@ export default function StackNavigation() {
       <Stack.Screen name="Frofile" component={ProfileScreen} />
       <Stack.Screen name="ArtistsDetail" component={ArtistsDetail} />
       <Stack.Screen name="PopularSong" component={PopularSongs} />
+      <Stack.Screen name="SignIn" component={SignIn} />
+      <Stack.Screen name="ListItem" component={ListItem} />
+      {/* <Stack.Screen name="MiniPlayMusic" component={MiniPlayMusic} />
+      <Stack.Screen name="StoreNavigation" component={Router} /> */}
+      
 
     </Stack.Navigator>
   );

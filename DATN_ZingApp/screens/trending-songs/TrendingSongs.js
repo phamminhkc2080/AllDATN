@@ -37,7 +37,6 @@ export default function TrendingSongs({navigation}) {
       .get("/songs/get-category-songs" + (id ? "?id=" + id : "?id=1"))
       .then((result) => {
         if(result?.data){
-          console.log('result : ', result.data);
           dispatch(dataSongsOfCategory(result.data));
         }else{
           console.error('result.data not valid!')
@@ -93,7 +92,6 @@ export default function TrendingSongs({navigation}) {
           return (
             <View style={{ paddingHorizontal: 10 }}>
               <Song item={item} navigation={navigation} index = {index} screenName = 'TrendingSongs'/>
-              {/* {console.log(item)} */}
             </View>
           );
         }}

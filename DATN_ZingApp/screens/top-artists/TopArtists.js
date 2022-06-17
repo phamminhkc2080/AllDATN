@@ -43,19 +43,9 @@ export default function TopArtists(props) {
 
   return (
     <SafeAreaView style={styles.constainer}>
-      <View style={styles.searchSection}>
-        <Ionicons
-          style={styles.searchIcon}
-          name="search"
-          size={20}
-          color="#000"
-        />
-        <TextInput
-          placeholder="Search...."
-          style={styles.input}
-          underlineColorAndroid="transparent"
-        />
-      </View>
+      {/* <View style={styles.searchSection}>
+      </View> */}
+      <Image style ={{width:'100%',height:100,}} source={require('../../assets/images/ArtistsBanner.png')}/>
 
       <FlatList
         data={dataAllArtists}
@@ -64,7 +54,6 @@ export default function TopArtists(props) {
           return (
             
             <View style={styles.containerComponent}>
-              {/* {console.log('data : ', [item.item])} */}
               <TouchableOpacity
                 style={styles.containerArtits}
                 onPress={()=>gotoArtitsDetail(item.item)
@@ -75,7 +64,7 @@ export default function TopArtists(props) {
                   <Image
                     style={styles.imgArtists}
                     source={{
-                      uri: `http://172.20.10.2:8000/${item.item.image}`,
+                      uri: `http://192.168.1.4:8000/${item.item.image}`,
                     }}
                   />
                 </View>

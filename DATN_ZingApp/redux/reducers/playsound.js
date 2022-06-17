@@ -4,7 +4,7 @@ const isShowHide = false;
 const isPlaying = false;
 const duration = 0;
 const position = 0;
-const isRepeat = true;
+const isRepeat = false;
 const isSliding = false;
 const sound = '';
 

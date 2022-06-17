@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -16,8 +16,11 @@ import {
   TITLE_CATEGORIES,
   TITLE_POPULAR_SONGS,
   TITLE_RECOMMENDED_SONGS,
+  TITLE_TOP_ARTISTS,
 } from "../../../constansts/common";
+import { SongContext } from "../../../contexts/SongContext";
 import { getDataPlaySongs, indexSong } from "../../../redux/actions/songs";
+import { request } from "../../utils/Request";
 
 const KEY_TYPE = {
   TOP_SONGS: "topSongs",
@@ -30,25 +33,10 @@ const { width, height } = Dimensions.get("window");
 
 export default function PopularSongs(props) {
   const dispatch = useDispatch();
-  const { storeIndexSong, dataPlaySongs } = useSelector((state) => state);
-  const mapKey = (item) => {
-    console.log("iditem : ", item);
-    if (item.idSong) {
-      return KEY_TYPE.TOP_SONGS;
-    }
+  const { song, songs, songControl } = useContext(SongContext);
 
-    if (item.idArtist) {
-      return KEY_TYPE.TOP_ARTISTS;
-    }
+  //const { storeIndexSong, dataPlaySongs } = useSelector((state) => state);
 
-    if (item.idCategoris) {
-      return KEY_TYPE.TOP_CATEGORIES;
-    }
-
-    if (item.idAlbum) {
-      return KEY_TYPE.ALBUM_SONGS;
-    }
-  };
   const handlerGetKey = (item) => {
     if (props.title === "Recommended For You") {
       return item.idSong;
@@ -64,38 +52,53 @@ export default function PopularSongs(props) {
   };
 
   const handleSongAndNavigate = (screenName, items) => {
-    console.log("Hi GUys 1");
     props.navigation.navigate(screenName, items);
   };
 
   const handlerIndexSong = (index) => {
-    dispatch(indexSong(index));
+    //dispatch(indexSong(index));
+    songControl.setIndex(index)
   };
 
   const onHandlerPlaySong = (items, index) => {
-    console.log("items : ", items);
-    const keyType = mapKey(items[0]);
-
     switch (props.title) {
       case TITLE_POPULAR_SONGS:
-        console.log("hi guys songs!!");
-        dispatch(getDataPlaySongs(items));
-        handlerIndexSong(index);
-        props.navigation.navigate("PlayerMusic");
+        if (items[index].idSong) {
+          onUpdateViewSong(items[index].idSong);
+
+          console.log("idArtits : ", items[index].idSong);
+
+          //dispatch(getDataPlaySongs(items));
+          songControl.setSongs(items)
+          handlerIndexSong(index);
+
+          props.navigation.navigate("PlayerMusic");
+        }
+        break;
+      case TITLE_RECOMMENDED_SONGS:
+        if (items[index].idSong) {
+          onUpdateViewSong(items[index].idSong);
+
+          console.log("idArtits : ", items[index].idSong);
+
+          songControl.setSongs(items)
+         // dispatch(getDataPlaySongs(items));
+          handlerIndexSong(index);
+
+          props.navigation.navigate("PlayerMusic");
+        }
+
         break;
 
-      case TITLE_RECOMMENDED_SONGS:
-        console.log("hi guys artists!!");
+      case TITLE_TOP_ARTISTS:
         handleSongAndNavigate("ArtistsDetail", items[index]);
         break;
 
       case TITLE_CATEGORIES:
-        console.log("hi guys category!!");
         handleSongAndNavigate("CategoriesDetails", items[index]);
 
         break;
       case TITLE_ALBUMS:
-        console.log("hi guys!!");
         handleSongAndNavigate("CategoriesDetails", items[index]);
         break;
 
@@ -103,7 +106,17 @@ export default function PopularSongs(props) {
         return;
     }
   };
+  const onUpdateViewSong = (item) => {
+    request.put("/songs/update-view-song", {
+      id: item,
+    });
+  };
 
+  // useEffect(()=>{
+  //   onUpdateViewSong()
+
+  // },[props.data[storeIndexSong].idArtist])
+  console.log();
   return (
     <View style={styles.container}>
       <View style={styles.containerTitle}>
@@ -129,7 +142,7 @@ export default function PopularSongs(props) {
               <Surface style={styles.surface}>
                 <ImageBackground
                   source={{
-                    uri: `http://172.20.10.2:8000/${item.cover || item.image}`,
+                    uri: `http://192.168.1.4:8000/${item.cover || item.image}`,
                   }}
                   style={styles.img}
                 ></ImageBackground>

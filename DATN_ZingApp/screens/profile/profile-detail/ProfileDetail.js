@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
+import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity } from "react-native";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -40,6 +40,11 @@ export default function ProfileDetail() {
           <Text style={styles.unname}>Minh Minh</Text>
           <Text style={styles.unname}>10 Jan 2000 </Text>
         </View>
+        <View style={{flex:1,justifyContent:'flex-end',alignItems:'flex-end'}}>
+        <TouchableOpacity style={{width:100,height:30,backgroundColor:'#bbb',justifyContent:'center',alignItems:'center'}}>
+          <Text>Sign In</Text>
+        </TouchableOpacity>
+      </View>
       </View>
       <View style={styles.divider} />
       {renderOption("music", "Songs", 20)}
@@ -49,6 +54,7 @@ export default function ProfileDetail() {
       <View style={styles.containerItems}>
         <Text style={styles.titleHistory}>History</Text>
       </View>
+     
     </View>
   );
 }

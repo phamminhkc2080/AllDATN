@@ -15,14 +15,14 @@ export const setShowHide = (status) => {
   };
 };
 
-export const durationSound = (duration) => {
+export const setDurationSound = (duration) => {
   return {
     type: DURATION_SOUND,
     payload: duration,
   };
 };
 
-export const positionSound = (position) => {
+export const setPositionSound = (position) => {
   return {
     type: POSITION_SOUND,
     payload: position,

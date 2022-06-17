@@ -22,7 +22,7 @@ export default function ArtistsDetail(props) {
   let dataAritsts = props.route.params;
 
   const dispatch = useDispatch();
-  const { dataPlaySongs, dataSongArtists } = useSelector((state) => state);
+  const { dataPlaySongs, dataSongArtists,storeIndexSong } = useSelector((state) => state);
   const [dataAblum, setDataAlbum] = useState([]);
   useEffect(() => {
     request
@@ -50,6 +50,8 @@ export default function ArtistsDetail(props) {
       .catch((error) => console.error(error));
   }, []);
 
+ 
+
   const onHanderBack = () => {
     props.navigation.goBack();
   };
@@ -67,15 +69,17 @@ export default function ArtistsDetail(props) {
     return num;
   }
 
-  console.log(dataAblum);
-
+  const onHandlerPlayAll = () => {
+    dispatch(getDataPlaySongs(dataSongArtists));
+    props.navigation.navigate("PlayerMusic");
+  };
   return (
     <View style={styles.container}>
       <View>
         <Image
           resizeMode="cover"
           style={styles.imgArtists}
-          source={{ uri: `http://172.20.10.2:8000/${dataAritsts.image}` }}
+          source={{ uri: `http://192.168.1.4:8000/${dataAritsts.image}` }}
         />
         <LinearGradient
           colors={["rgba(0,0,0,0.1)", "black"]}
@@ -93,7 +97,7 @@ export default function ArtistsDetail(props) {
           style={styles.iconBack}
           name="arrow-left"
           size={30}
-          color="black"
+          color="white"
           onPress={onHanderBack}
         />
 
@@ -112,7 +116,10 @@ export default function ArtistsDetail(props) {
             <TouchableOpacity style={styles.btnFollow}>
               <Text style={styles.textFollow}>Follow</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btnPlayAll}>
+            <TouchableOpacity
+              style={styles.btnPlayAll}
+              onPress={onHandlerPlayAll}
+            >
               <Text style={styles.textPlayAll}>Play All</Text>
             </TouchableOpacity>
           </View>
@@ -162,6 +169,7 @@ const styles = StyleSheet.create({
   },
   iconBack: {
     position: "absolute",
+    right: 200,
   },
   imgArtists: {
     width: width,

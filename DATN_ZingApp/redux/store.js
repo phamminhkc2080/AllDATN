@@ -23,10 +23,10 @@ const rootReducer = {
   dataSongArtists: reducerSongsArtists,
   dataSongsSearch: reducerSongsSearch,
   statusShowHide: reducerSetShowHide,
-  durationSound:reducerDurationSound,
-  positionSound:reducerPositionSound,
+  getDurationSound:reducerDurationSound,
+  getPositionSound:reducerPositionSound,
   statusPlayingSound:reducerIsPlayingSound,
-  sound :reducerSound,
+  storesound :reducerSound,
   statusSliding:reducerIsSliding,
   statusRepeat:reducerIsRepeat
 };

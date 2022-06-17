@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Surface } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 import {
   StyleSheet,
   Text,
@@ -11,8 +11,9 @@ import {
 } from "react-native";
 import Song from "../home/songs/Song";
 import { useDispatch, useSelector } from "react-redux";
-import { dataSongsOfCategory } from "../../redux/actions/songs";
+import { dataSongsOfCategory, getDataPlaySongs } from "../../redux/actions/songs";
 import { request } from "../utils/Request";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function CategoriesDetails(props) {
   const dispatch = useDispatch();
@@ -28,8 +29,9 @@ export default function CategoriesDetails(props) {
   // }
 
   useEffect(() => {
-    request
-      .get(
+   
+     if(data.idCategoris){
+      request.get(
         "/songs/get-category-songs" +
           (data.idCategoris ? "?id=" + data.idCategoris : "?id=")
       )
@@ -41,14 +43,47 @@ export default function CategoriesDetails(props) {
         }
       })
       .catch((error) => console.error(error));
+     }
+      
+      if(data.idAlbum){
+        request
+        .get(
+          "/songs/get-songs-albums" +
+            (data.idAlbum ? "?id=" + data.idAlbum : "?id=")
+        )
+        .then((result) => {
+          if (result?.data) {
+            dispatch(dataSongsOfCategory(result.data));
+          } else {
+            console.error("result.data not valid!");
+          }
+        })
+        .catch((error) => console.error(error));
+      }
   }, []);
 
+  const onHandlerPlayAll =()=>{
+      dispatch(getDataPlaySongs(dataSongCategory));
+      props.navigation.navigate('PlayerMusic');
+  }
+
+  const onBackNavigation = () => {
+    props.navigation.navigate("TabsNavigation");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+      <View style={styles.iconBack}>
+          <Icon
+            name="arrow-left"
+            size={30}
+            color="black"
+            onPress={onBackNavigation}
+          />
+        </View>
         <Surface style={styles.surface}>
           <Image
-            source={{ uri: `http://172.20.10.2:8000/${data.cover}` }}
+            source={{ uri: `http://192.168.1.4:8000/${data.cover}` }}
             style={styles.img}
           />
         </Surface>
@@ -57,7 +92,7 @@ export default function CategoriesDetails(props) {
 
         <View style={styles.playContainer}>
           <Text style={styles.text}>Play All</Text>
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity style={styles.btn} onPress ={onHandlerPlayAll}>
             <Icon name="play" size={30} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -69,7 +104,7 @@ export default function CategoriesDetails(props) {
         renderItem={({ item, index }) => {
           return (
             <View style={{ paddingHorizontal: 10 }}>
-              <Song item={item} navigation={navigation} index={index} screenName = 'CatgoriesDetails'/>
+              <Song item={item} navigation={props.navigation} index={index} screenName = 'CatgoriesDetails'/>
             </View>
           );
         }}
