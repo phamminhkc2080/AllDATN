@@ -1,12 +1,25 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import { Surface } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signInAction } from "../../../redux/actions/users";
 
 const { width, height } = Dimensions.get("screen");
 
 export default function ProfileDetail() {
+  const dispatch = useDispatch();
+  const { dataSignIn } = useSelector((state) => state);
   const renderOption = (icon, name, count) => {
     return (
       <View style={styles.options}>
@@ -26,6 +39,17 @@ export default function ProfileDetail() {
       </View>
     );
   };
+  const navigation = useNavigation();
+
+  const checkButton = (input) => {
+    if (input === "Signin") {
+      navigation.navigate("SignIn");
+    } else if (input === "Signout") {
+      dispatch(signInAction(false, "", ""));
+      navigation.navigate("SignIn");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.info}>
@@ -36,15 +60,28 @@ export default function ProfileDetail() {
           />
         </Surface>
         <View style={styles.dataContainer}>
-          <Text style={styles.name}>Pham Minh</Text>
-          <Text style={styles.unname}>Minh Minh</Text>
-          <Text style={styles.unname}>10 Jan 2000 </Text>
+          <Text style={styles.name}>{dataSignIn.username}</Text>
         </View>
-        <View style={{flex:1,justifyContent:'flex-end',alignItems:'flex-end'}}>
-        <TouchableOpacity style={{width:100,height:30,backgroundColor:'#bbb',justifyContent:'center',alignItems:'center'}}>
-          <Text>Sign In</Text>
-        </TouchableOpacity>
-      </View>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+          }}
+        >
+          <TouchableOpacity
+            onPress={dataSignIn.isSignIn ? checkButton('Signout'):checkButton('Signin')}
+            style={{
+              width: 100,
+              height: 30,
+              backgroundColor: "#bbb",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text>{dataSignIn.isSignIn ? "Sign out" : "Sign in"}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.divider} />
       {renderOption("music", "Songs", 20)}
@@ -54,7 +91,6 @@ export default function ProfileDetail() {
       <View style={styles.containerItems}>
         <Text style={styles.titleHistory}>History</Text>
       </View>
-     
     </View>
   );
 }
@@ -81,11 +117,15 @@ const styles = StyleSheet.create({
   },
   dataContainer: {
     paddingLeft: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   name: {
-    fontSize: 18,
+    width: 200,
+    height: 60,
+    fontSize: 20,
     color: "#000",
-    fontWeight: "bold",
+    fontWeight: 800,
   },
   unname: {
     fontSize: 18,

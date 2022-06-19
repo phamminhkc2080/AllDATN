@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,6 +15,7 @@ import { getDataPlaySongs, getSongArtists } from "../../redux/actions/songs";
 import { request } from "../utils/Request";
 import Song from "../home/songs/Song";
 import PopularSongs from "../home/popular-songs/PopularSongs";
+import { SongContext } from "../../contexts/SongContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -22,8 +23,16 @@ export default function ArtistsDetail(props) {
   let dataAritsts = props.route.params;
 
   const dispatch = useDispatch();
-  const { dataPlaySongs, dataSongArtists,storeIndexSong } = useSelector((state) => state);
+  const { statusSignIn } = useSelector((state) => state);
   const [dataAblum, setDataAlbum] = useState([]);
+
+  const { artistsSongs, songControl } = useContext(SongContext);
+  const {
+    isShow,
+    setShow,
+    setArtistsSongs,
+  } = songControl;
+
   useEffect(() => {
     request
       .get(
@@ -45,15 +54,20 @@ export default function ArtistsDetail(props) {
           (dataAritsts.idArtist ? "?id=" + dataAritsts.idArtist : "")
       )
       .then((result) => {
-        dispatch(getSongArtists(result?.data));
+        // dispatch(getSongArtists(result?.data));
+        // console.log('dataSOngsArtists : ',result.data)
+        setArtistsSongs(result.data);
       })
       .catch((error) => console.error(error));
   }, []);
 
- 
+  useEffect(() => {
+    setShow(false);
+  }, [isShow]);
 
   const onHanderBack = () => {
-    props.navigation.goBack();
+    setShow(true);
+    props.navigation.navigate("TabsNavigation");
   };
 
   function nFormatter(num) {
@@ -70,9 +84,12 @@ export default function ArtistsDetail(props) {
   }
 
   const onHandlerPlayAll = () => {
-    dispatch(getDataPlaySongs(dataSongArtists));
+    // dispatch(getDataPlaySongs(dataSongArtists));
+    songControl.setSongs(artistsSongs);
     props.navigation.navigate("PlayerMusic");
   };
+  // console.log('artistsSongNgoai : ',artistsSongs);
+
   return (
     <View style={styles.container}>
       <View>
@@ -145,13 +162,13 @@ export default function ArtistsDetail(props) {
       </View>
       <View style={{ paddingLeft: 15 }}>
         <FlatList
-          data={dataSongArtists}
+          data={artistsSongs}
           keyExtractor={(item) => item.idSong}
           renderItem={({ item, index }) => {
             return (
               <Song
                 item={item}
-                index={index}
+                indexSong={index}
                 navigation={props.navigation}
                 screenName="ArtistsDetail"
               />

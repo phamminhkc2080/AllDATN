@@ -13,8 +13,10 @@ import PopularSongs from "../home/popular-songs/PopularSongs";
 import Song from "../home/songs/Song";
 import SignIn from "../user/SignIn";
 import ListItem from "../components/ListItem";
-import MiniPlayMusic from "../player/MiniPlayMusic";
-import Router from "./Router";
+import ResultsSearchArtists from "../search/ResultsSearchArtists";
+import PlaylistItem from "../components/PlaylistItem";
+import DataPlaylist from "../data-playlist/DataPlaylist";
+import SongsPlaylist from "../data-playlist/SongsPlaylist";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,12 +34,17 @@ export default function StackNavigation() {
       <Stack.Screen name="SongData" component={Song} />
       <Stack.Screen name="PlayerMusic" component={PlayerMusic} />
       <Stack.Screen name="ResultsSearch" component={ResultsSearch} />
+      <Stack.Screen name="ResultsSearchArtists" component={ResultsSearchArtists} />
       <Stack.Screen name="HeaderHome" component={HeaderHome} />
       <Stack.Screen name="Frofile" component={ProfileScreen} />
       <Stack.Screen name="ArtistsDetail" component={ArtistsDetail} />
       <Stack.Screen name="PopularSong" component={PopularSongs} />
       <Stack.Screen name="SignIn" component={SignIn} />
       <Stack.Screen name="ListItem" component={ListItem} />
+      <Stack.Screen name="PlayListItem" component={PlaylistItem} />
+      <Stack.Screen name="DataPlaylist" component={DataPlaylist} />
+      <Stack.Screen name="SongsPlaylist" component={SongsPlaylist} />
+      
       {/* <Stack.Screen name="MiniPlayMusic" component={MiniPlayMusic} />
       <Stack.Screen name="StoreNavigation" component={Router} /> */}
       

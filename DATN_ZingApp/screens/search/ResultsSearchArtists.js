@@ -8,50 +8,19 @@ import {
   Dimensions,
   FlatList,
 } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { request } from "../utils/Request";
 import { getSongSearch } from "../../redux/actions/songs";
 import Song from "../home/songs/Song";
-import { SongContext } from "../../contexts/SongContext";
+import ArtistsItem from "../components/ArtistsItem";
 
 const { width, height } = Dimensions.get("screen");
 
-export default function ResultsSearch({ navigation }) {
+export default function ResultsSearchArtists({ navigation }) {
   const [textSearch, setTextSearch] = useState();
-
-  const { song, songs, searchSongs, songControl } = useContext(SongContext);
-  const {
-    index,
-    isShow,
-    isRepeat,
-    isPlaying,
-    isSliding,
-    position,
-    duration,
-
-    setPlaying,
-    setSliding,
-    setPosition,
-    setDuration,
-
-    setSong,
-    setSongs,
-    setIndex,
-    setShow,
-    setRepeat,
-
-    setSearchSongs,
-
-    onHandlerBack,
-    onHandlerNext,
-    onHandlerRepeat,
-    onPauseSound,
-    onPlaySound,
-    gotoPosition,
-  } = songControl;
-
+  const [dataArtists, setDataArtists] = useState([]);
 
   const dispatch = useDispatch();
   const { dataSongsSearch } = useSelector((state) => state);
@@ -59,21 +28,23 @@ export default function ResultsSearch({ navigation }) {
     setTextSearch(text);
     request
       .get(
-        "/songs/get-songs-search" +
+        "/artists/get-search-artists" +
           (textSearch ? "?search=" + textSearch : "?search=")
       )
       .then((result) => {
         if (result?.data) {
-          setSearchSongs(result?.data)
+          setDataArtists(result.data);
         } else {
           console.error("result.data not valid!");
         }
       })
       .catch((error) => console.error(error));
   };
+
   useEffect(() => {
     handlerTextSearch();
   }, [textSearch]);
+
   return (
     <View style={styles.container}>
       <SafeAreaView>
@@ -93,24 +64,24 @@ export default function ResultsSearch({ navigation }) {
             />
           </View>
           <View>
-            {dataSongsSearch.length > 0 && (
+            {dataArtists.length > 0 && (
               <Text style={styles.title}>Result Search</Text>
-            ) }
+            )}
             <FlatList
-              data={searchSongs}
+              data={dataArtists}
               renderItem={({ item, index }) => {
                 return (
+                  // console.log(item)
                   <View style={{ paddingHorizontal: 10 }}>
-                    <Song
+                    <ArtistsItem
                       item={item}
                       navigation={navigation}
-                      indexSong={index}
-                      screenName="ResultSearch"
+                      index={index}
                     />
                   </View>
                 );
               }}
-              keyExtractor={(item) => item.idSong}
+              keyExtractor={(item) => item.idArtist}
             />
           </View>
         </View>

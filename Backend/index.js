@@ -75,6 +75,7 @@ const upFileRouter = require('./Router/UpFileRouter')
 const artistRouter = require('./Router/ArtistsRouter')
 const albumsRouter = require('./Router/AlbumsRouter')
 const usersRouter = require('./Router/UserRouter')
+const playlistRouter = require('./Router/PlaylistRouter')
 //create router with url api/teacher+ url in router file
 app.use('/api/songs', songRouter)
 app.use('/api/upfile', upFileRouter)
@@ -82,6 +83,7 @@ app.use('/api/categories', categorisRouter)
 app.use('/api/artists', artistRouter)
 app.use('/api/albums', albumsRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/playlist', playlistRouter)
 
 
 server.server.listen(process.env.PORT||8000, () => {

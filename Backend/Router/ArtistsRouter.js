@@ -6,6 +6,7 @@ const applicantController = require("../src/ArtistsController")
     //handles post request with url 
 router.get('/getTopArtists', applicantController.getTopArtists);
 router.get('/get-all-artists', applicantController.getAllArtists);
+router.get('/get-search-artists', applicantController.getSearchArtists);
 
 
 // export router to use in index file

@@ -137,6 +137,27 @@ const updateViewSong = async (req, res) => {
   }
 };
 
+
+const getSongsPlaylist = async (req, res) => {
+  try {
+    if (req.query.idPlaylist && req.query.idUser ) {
+      const query = `select Songs.idSong,Songs.name as namesong,Songs.cover,Songs.dir,Artist.name as nameartists from Artist inner join Songs on Artist.idArtist = Songs.idArtist
+      inner join SongsPlaylist on Songs.idSong = SongsPlaylist.idSong
+      inner join Playlists on SongsPlaylist.idPlaylist=Playlists.idPlaylist inner join Users
+      on Playlists.idUser = Users.idUser where Users.idUser=${req.query.idUser} and Playlists.idPlaylist=${req.query.idPlaylist}`;
+      const getSongsPlaylist = await dao.sequelize.query(query, {
+        raw: true,
+        nest: true,
+      });
+
+      return res.status(200).send(getSongsPlaylist);
+    }
+    return res.status(200).send([]);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
 module.exports = {
   getAllSongs,
   upload,
@@ -147,5 +168,6 @@ module.exports = {
   getSongsArtists,
   getSongsSearch,
   getSongsAlbum,
-  updateViewSong
+  updateViewSong,
+  getSongsPlaylist
 };

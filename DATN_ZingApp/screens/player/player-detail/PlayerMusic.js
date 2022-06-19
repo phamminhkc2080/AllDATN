@@ -34,6 +34,7 @@ const { width, height } = Dimensions.get("window");
 
 const PlayerMusic = (props) => {
   const [sound, setSound] = useState();
+  const [disablePlay, setDisablePlay] = useState(true);
 
   const dispatch = useDispatch();
   // const {
@@ -64,6 +65,7 @@ const PlayerMusic = (props) => {
     isSliding,
     position,
     duration,
+    isShow,
 
     setPlaying,
     setSliding,
@@ -81,7 +83,7 @@ const PlayerMusic = (props) => {
     onHandlerRepeat,
     onPauseSound,
     onPlaySound,
-    gotoPosition
+    gotoPosition,
   } = songControl;
 
   // const scrollX = useRef(new Animated.Value(0)).current;
@@ -109,13 +111,23 @@ const PlayerMusic = (props) => {
   };
 
   const onBackNavigation = () => {
-    setShow(true)
+    setShow(true);
     //dispatch(setShowHide(true));
     // dispatch(setPositionSound(position));
     // dispatch(setDurationSound(duration));
     props.navigation.goBack();
   };
 
+  useEffect(() => {
+    setShow(false);
+  }, [songControl.isShow]);
+
+  useEffect(() => {
+    console.log("useEffect player music");
+    setTimeout(() => {
+      setDisablePlay(false);
+    }, 2000);
+  }, []);
   // console.log("dataPlaySongsMusic : ", songs);
   // console.log("storeIndexSongMusic  : ", index);
 
@@ -145,7 +157,7 @@ const PlayerMusic = (props) => {
             )}
           </View>
         </Animated.View>
-        
+
         {/* Song Content */}
         <View>
           <Text style={[styles.songContent, styles.songTitle]}>
@@ -193,9 +205,7 @@ const PlayerMusic = (props) => {
 
         {/* music progress durations */}
         <View style={styles.progressLevelDuration}>
-          <Text style={styles.progressLabelText}>
-            {formatNumber(position)}
-          </Text>
+          <Text style={styles.progressLabelText}>{formatNumber(position)}</Text>
           <Text style={styles.progressLabelText}>
             {displayDuration(duration)}
           </Text>
@@ -218,7 +228,7 @@ const PlayerMusic = (props) => {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity onPress={onPlaySound}>
+          <TouchableOpacity onPress={!disablePlay ? onPlaySound : (() => {})}>
             <Ionicons
               name={isPlaying ? "pause-circle" : "ios-play-circle"}
               size={75}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -15,41 +15,78 @@ import { Surface } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { getDataPlaySongs, indexSong } from "../../../redux/actions/songs";
 import { request } from "../../utils/Request";
+import { SongContext } from "../../../contexts/SongContext";
 
 const { width, height } = Dimensions.get("window");
 
-const Song = ({ item, navigation, index, screenName }) => {
-  const dispatch = useDispatch();
-  const { dataSongCategory, dataSongArtists, dataPlaySongs, dataSongsSearch } =
-    useSelector((state) => state);
+const Song = ({ item, navigation, indexSong, screenName }) => {
+  // const dispatch = useDispatch();
+  // const { dataSongCategory, dataSongArtists, dataPlaySongs, dataSongsSearch } =
+  //   useSelector((state) => state);
+  const {dataSignIn} = useSelector((state) => state);
+ 
+  const {
+    trendingSongs,
+    artistsSongs,
+    categorySongs,
+    songControl,
+    searchSongs,
+  } = useContext(SongContext);
+  const {
+    setSongs,
+    setIndex,
+
+    setNewPlayList,
+
+    createSound,
+    onPauseSound
+  } = songControl;
 
   const [modalVisible, setModalVisible] = useState(false);
+
   const handlerGetData = () => {
     if (screenName === "TrendingSongs") {
-      dispatch(getDataPlaySongs(dataSongCategory));
+      // dispatch(getDataPlaySongs(dataSongCategory));
+      //onPauseSound()
+      setIndex(indexSong);  
+      setSongs([]);
+      setSongs(trendingSongs);
+      // setTimeout(()=>{
+      //   createSound()
+      // },1000) 
+
+      
     } else if (screenName === "ArtistsDetail") {
-      dispatch(getDataPlaySongs(dataSongArtists));
+      // dispatch(getDataPlaySongs(dataSongArtists));
+      setSongs(artistsSongs);
     } else if (screenName === "ResultSearch") {
-      dispatch(getDataPlaySongs(dataSongsSearch));
+      // dispatch(getDataPlaySongs(dataSongsSearch));
+
+      setSongs(searchSongs);
+      // console.log('[searchSongs[indexSong]] : ', searchSongs[indexSong])
     }
     if (screenName === "CatgoriesDetails") {
-      dispatch(getDataPlaySongs(dataSongCategory));
+      // dispatch(getDataPlaySongs(dataSongCategory));
+      setSongs(categorySongs);
+      // console.log('songsSong : ', songs)
     }
   };
   const playSong = () => {
-    if(item){
-      onUpdateViewSong(item)
-      dispatch(indexSong(index));
+    if (item) {
+      handlerGetData();
+
+      onUpdateViewSong(item);
+      setNewPlayList(true);
+      setIndex(indexSong);
       navigation.navigate("PlayerMusic");
     }
-   
   };
 
-  const onUpdateViewSong=(item)=>{
-    request.put('/songs/update-view-song',{
-       id:item.idSong
-    })
-  }
+  const onUpdateViewSong = (item) => {
+    request.put("/songs/update-view-song", {
+      id: item.idSong,
+    });
+  };
 
   const openModal = () => {
     setModalVisible(true);
@@ -59,9 +96,26 @@ const Song = ({ item, navigation, index, screenName }) => {
     setModalVisible(false);
   };
 
-  useEffect(() => {
-    handlerGetData();
-  }, [dataPlaySongs]);
+  // useEffect(() => {
+  //   console.log('screenName = ', screenName)
+  //   handlerGetData();
+  // }, [screenName]);
+
+  const handlePlayMusic = () => {
+    // console.log('songsSearch : ', item)
+    setModalVisible(false);
+    setSongs([searchSongs[indexSong]]);
+    navigation.navigate("PlayerMusic");
+  };
+
+  const handleNagativeListSong = ()=>{
+    console.log('indexListSong : ', item)
+    setModalVisible(false)
+    navigation.navigate('DataPlaylist',{item})
+  }
+  const handlerNavigateSignIn=()=>{
+    navigation.navigate('SignIn')
+  }
 
   return (
     <View>
@@ -84,7 +138,7 @@ const Song = ({ item, navigation, index, screenName }) => {
               <View style={styles.playerContainer}>
                 <Text style={styles.title}>{item.name}</Text>
                 <Text style={styles.subTitle}>{item.name}</Text>
-                <TouchableOpacity style={styles.btn}>
+                <TouchableOpacity style={styles.btn} onPress={handlePlayMusic}>
                   <Icon name="play" size={30} color="#fff" />
                 </TouchableOpacity>
               </View>
@@ -92,10 +146,10 @@ const Song = ({ item, navigation, index, screenName }) => {
                 <Icon name="heart" size={30} color="#ff5b77" />
                 <Text style={styles.text}>Add To Favourite</Text>
               </View>
-              <View style={styles.option}>
+              <TouchableOpacity style={styles.option} onPress={dataSignIn.isSignIn ?()=>{handleNagativeListSong}  : ()=>{handlerNavigateSignIn}}>
                 <Icon name="playlist-plus" size={30} color="#000" />
                 <Text style={styles.text}>Add To Playlist</Text>
-              </View>
+              </TouchableOpacity>
               <View style={styles.option}>
                 <Icon name="album" size={30} color="#000" />
                 <Text style={styles.text}>Create Album</Text>

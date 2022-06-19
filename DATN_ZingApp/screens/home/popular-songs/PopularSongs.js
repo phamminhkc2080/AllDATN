@@ -35,6 +35,34 @@ export default function PopularSongs(props) {
   const dispatch = useDispatch();
   const { song, songs, songControl } = useContext(SongContext);
 
+  const {
+    index,
+    isShow,
+    isRepeat,
+    isPlaying,
+    isSliding,
+    position,
+    duration,
+
+    setPlaying,
+    setSliding,
+    setPosition,
+    setDuration,
+
+    setSong,
+    setSongs,
+    setIndex,
+    setShow,
+    setRepeat,
+
+    onHandlerBack,
+    onHandlerNext,
+    onHandlerRepeat,
+    onPauseSound,
+    onPlaySound,
+    gotoPosition,
+  } = songControl;
+
   //const { storeIndexSong, dataPlaySongs } = useSelector((state) => state);
 
   const handlerGetKey = (item) => {
@@ -57,7 +85,7 @@ export default function PopularSongs(props) {
 
   const handlerIndexSong = (index) => {
     //dispatch(indexSong(index));
-    songControl.setIndex(index)
+    songControl.setIndex(index);
   };
 
   const onHandlerPlaySong = (items, index) => {
@@ -66,12 +94,12 @@ export default function PopularSongs(props) {
         if (items[index].idSong) {
           onUpdateViewSong(items[index].idSong);
 
-          console.log("idArtits : ", items[index].idSong);
+          // console.log("idArtits : ", items[index].idSong);
 
           //dispatch(getDataPlaySongs(items));
-          songControl.setSongs(items)
+          songControl.setSongs(items);
           handlerIndexSong(index);
-
+          songControl.setPlaying(true);
           props.navigation.navigate("PlayerMusic");
         }
         break;
@@ -81,8 +109,8 @@ export default function PopularSongs(props) {
 
           console.log("idArtits : ", items[index].idSong);
 
-          songControl.setSongs(items)
-         // dispatch(getDataPlaySongs(items));
+          songControl.setSongs(items);
+          // dispatch(getDataPlaySongs(items));
           handlerIndexSong(index);
 
           props.navigation.navigate("PlayerMusic");

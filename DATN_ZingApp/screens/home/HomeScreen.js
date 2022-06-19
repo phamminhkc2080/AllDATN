@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
   ScrollView,
   SafeAreaView,
   Dimensions,
+  SafeAreaViewComponent
 } from "react-native";
 import { request } from "../utils/Request";
 import HeaderHome from "./header/HeaderHome";
@@ -19,6 +20,7 @@ import {
   TITLE_RECOMMENDED_SONGS,
   TITLE_TOP_ARTISTS,
 } from "../../constansts/common";
+import { SongContext } from "../../contexts/SongContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -27,7 +29,40 @@ export default function HomeScreen({ navigation }) {
   const { dataTopSongs, dataRecommendedSongs, dataTopArtists, dataCategories } =
     useSelector((state) => state);
 
+    // // 
+    // const { song, songs, songControl } = useContext(SongContext);
+    // const {
+    //   index,
+    //   isShow,
+    //   isRepeat,
+    //   isPlaying,
+    //   isSliding,
+    //   position,
+    //   duration,
+  
+    //   setPlaying,
+    //   setSliding,
+    //   setPosition,
+    //   setDuration,
+  
+    //   setSong,
+    //   setSongs,
+    //   setIndex,
+    //   setShow,
+    //   setRepeat,
+  
+    //   onHandlerBack,
+    //   onHandlerNext,
+    //   onHandlerRepeat,
+    //   onPauseSound,
+    //   onPlaySound,
+    //   gotoPosition,
+    // } = songControl;
+
+    
   // const [dataTopSongs,setDataTopSongs]= useState([]);
+
+
 
   useEffect(() => {
     request
@@ -59,8 +94,10 @@ export default function HomeScreen({ navigation }) {
       .catch((error) => console.error(error));
   }, []);
 
+  
+ 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <HeaderHome navigation={navigation} />
 
       <ScrollView>
@@ -85,7 +122,7 @@ export default function HomeScreen({ navigation }) {
           navigation={navigation}
         />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

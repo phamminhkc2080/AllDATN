@@ -1,13 +1,14 @@
 import { SIGN_IN } from "../constants/types";
 
-const dataTopArtists = 
-{isSigin:false,
-    dataUser:[]};
-
-export const reducerTopArtists = (state = dataTopArtists, action) => {
+const dataUser={
+  idUser:'',
+  username:'',
+  isSignIn:false
+};
+export const  reducerIsSignin = (state = dataUser, action) => {
   switch (action.type) {
     case SIGN_IN:
-      return action.payload;
+      return action;
     default:
       return state;
   }

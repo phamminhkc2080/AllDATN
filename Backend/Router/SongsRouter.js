@@ -14,6 +14,7 @@ router.get('/get-artists-songs',applicantController.getSongsArtists)
 router.get('/get-songs-search',applicantController.getSongsSearch)
 router.get('/get-songs-albums',applicantController.getSongsAlbum)
 router.put('/update-view-song',applicantController.updateViewSong)
+router.get('/get-songs-playlist',applicantController.getSongsPlaylist)
 
 // export router to use in index file
 module.exports = router;

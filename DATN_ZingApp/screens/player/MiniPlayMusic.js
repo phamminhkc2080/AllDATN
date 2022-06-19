@@ -1,7 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useEffect } from "react";
-import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { SongContext } from "../../contexts/SongContext";
 
 export default function MiniPlayMusic() {
@@ -33,9 +39,8 @@ export default function MiniPlayMusic() {
     onHandlerRepeat,
     onPauseSound,
     onPlaySound,
-    gotoPosition
+    gotoPosition,
   } = songControl;
-
 
   // const { songs, index, isPlaying, isShow } =
   //   useSelector((state) => state);
@@ -48,39 +53,42 @@ export default function MiniPlayMusic() {
   //   onHandlerRepeat,
   // ] = usePlaySound(sound, setSound);
 
-  useEffect(()=>{
-    if(!isShow && song){
-      
-      onPlaySound()
+  useEffect(() => {
+    if (!isShow && song) {
+      onPlaySound();
     }
+  }, [isShow]);
 
-  },[isShow])
-  
-  const onNavigate =()=>{
-      navigation.navigate('PlayerMusic');
-  }
+  const onNavigate = () => {
+    setPlaying((playing) => !playing);
+    navigation.navigate("PlayerMusic");
+  };
+
+  console.log('songs mini = ', songs)
 
   return (
     <View style={[styles.container, !isShow && styles.hideContainer]}>
-      <TouchableWithoutFeedback  onPress={onNavigate}>
+      <TouchableWithoutFeedback onPress={onNavigate}>
         <View style={styles.containerImageTitle}>
-
-        <View>
-          <Image
-            style={styles.image}
-            source={require("../../assets/images/cs3.jpg")}
-          />
+          <View>
+            <Image
+              style={styles.image}
+              source={require("../../assets/images/cs3.jpg")}
+            />
+          </View>
+          <View style={styles.containerText}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={styles.nameSong}
+            >
+              {songs && songs[index]?.namesong}
+            </Text>
+            <Text numberOfLines={1} ellipsizeMode="tail">
+              {songs && songs[index]?.nameartists}
+            </Text>
+          </View>
         </View>
-        <View style={styles.containerText}>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nameSong}>
-            {songs && songs[index]?.namesong}
-          </Text>
-          <Text numberOfLines={1} ellipsizeMode="tail">
-            {songs &&songs[index]?.nameartists}
-          </Text>
-        </View>
-        </View>
-
       </TouchableWithoutFeedback>
       <View style={styles.containerButton}>
         <Ionicons
@@ -127,7 +135,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
-    backgroundColor:'red'
   },
 
   containerButton: {

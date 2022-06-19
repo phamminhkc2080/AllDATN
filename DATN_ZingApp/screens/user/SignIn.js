@@ -1,33 +1,32 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   TextInput,
-  Alert
+  Alert,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/FontAwesome";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { request } from "../utils/Request";
+import { signIn, signInAction } from "../../redux/actions/users";
+import { SongContext } from "../../contexts/SongContext";
 
 export default function SignIn() {
   const navigation = useNavigation();
-
-  const { isStatus, toast, username, password, token } = useSelector(
-    (state) => state
-  );
+  const dispatch = useDispatch();
+  const { dataSignIn } = useSelector((state) => state);
 
   const [userNameInput, setUserNameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [isUserName, setIsUserName] = useState(true);
   const [isPassword, setIsPassword] = useState(true);
-  const [dataUser, setDataUser] = useState([]);
 
   const onChangedUsername = (value) => {
     setUserNameInput(value);
@@ -46,77 +45,129 @@ export default function SignIn() {
         password: password,
       })
       .then((result) => {
-        result.data && setDataUser(result.data);
+        console.log("result : ", result.data);
+
+        if (result?.data) {
+          // onHandleSignIn();
+          if (result.data.length===0) {
+            alert("Wrong username or password");
+          } else {
+            dispatch(
+              signInAction(
+                true,
+                result?.data[0]?.idUser,
+                result?.data[0]?.username
+              )
+            );
+            navigation.navigate("TabsNavigation");
+          }
+         
+        }
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  // const handleLogin=(username, password)=>{
-  //   if(username.length===0 && password===0){
-  //     return 'Please enter fill all the field !!'
-  //   }else if(username.length===0){
-  //     return 'please enter your username !!'
-  //   }else if(password.length===0){
-  //     return 'please enter your password !!'
-  //   }
-  // }
+  // const { song, songs, songControl } = useContext(SongContext);
+  //   const {
+  //     index,
+  //     isShow,
+  //     isRepeat,
+  //     isPlaying,
+  //     isSliding,
+  //     position,
+  //     duration,
 
-  //   const saveUserData = (user) => {
-  //     AsyncStorage.setItem("idUser", user._id);
-  //     AsyncStorage.setItem("FullName", user.fullname);
-  //     AsyncStorage.setItem("Email", user.email);
-  //     AsyncStorage.setItem("Token", user.token);
-  //     dispatch(loginsuccess(user.fullname, "da", user.token));
-  //   };
-  const showAlert = (message) =>
-  Alert.alert(
-    "Warning!!",
-    message,
-    [
-      {
-        text: "Cancel",
-        onPress: () => Alert.alert("Cancel Pressed"),
-        style: "cancel",
-      },
-    ],
-    {
-      cancelable: true,
-      onDismiss: () =>
-        Alert.alert(
-          "This alert was dismissed by tapping outside of the alert dialog."
-        ),
-    }
-  );
+  //     setPlaying,
+  //     setSliding,
+  //     setPosition,
+  //     setDuration,
+
+  //     setSong,
+  //     setSongs,
+  //     setIndex,
+  //     setShow,
+  //     setRepeat,
+
+  //     onHandlerBack,
+  //     onHandlerNext,
+  //     onHandlerRepeat,
+  //     onPauseSound,
+  //     onPlaySound,
+  //     gotoPosition,
+  //   } = songControl;
+
+  // useEffect(()=>{
+  //   setShow(false)
+  // },[isShow])
+
+  // const saveUserData = async (item) => {
+  //   try {
+  //     const user = {
+  //       idUser: item[0]?.idUser,
+  //       email: item[0]?.username,
+  //       isSignIn: true,
+  //     };
+  //     const dataUser = JSON.stringify(user);
+
+  //     await AsyncStorage.setItem("dataUser", dataUser);
+  //     console.log("dataStringUser : ", dataUser);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
+
+  // const getDataUser = async () => {
+  //   try {
+  //     const jsonUser = await AsyncStorage.getItem("dataUser");
+  //     console.log("dataUser : ", jsonUser.idUser);
+  //     return jsonUser != null ? JSON.parse(jsonUser) : null;
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
+
+  // const showAlert = (message) =>
+  // Alert.alert(
+  //   "Warning!!",
+  //   message,
+  //   [
+  //     {
+  //       text: "Cancel",
+  //       onPress: () => Alert.alert("Cancel Pressed"),
+  //       style: "cancel",
+  //     },
+  //   ],
+  //   {
+  //     cancelable: true,
+  //     onDismiss: () =>
+  //       Alert.alert(
+  //         "This alert was dismissed by tapping outside of the alert dialog."
+  //       ),
+  //   }
+  // );
   const onClickLogin = () => {
     if (userNameInput.length == 0 && passwordInput.length == 0) {
-      console.log("Please enter fill all the field !!")
       // showAlert(message);
       alert("Please enter fill all the field !!");
-    } else if (userNameInput.length == 0) {
-      console.log("please enter your username !!")
-      alert("please enter your username !!");
-      // showAlert(message);
-    } else if (passwordInput.length == 0) {
-      console.log("please enter your password !!")
-      alert("please enter your password !!");
-      // showAlert(message);
+    } else {
+      if (userNameInput.length == 0) {
+        alert("please enter your username !!");
+        // showAlert(message);
+      } else {
+        if (passwordInput.length == 0) {
+          alert("please enter your password !!");
+          // showAlert(message);
+        } else {
+          signInUser(userNameInput, passwordInput);
+        }
+      }
     }
-    signInUser(userNameInput,passwordInput);
-      onHandleSignIn();
-    
   };
 
-  const onHandleSignIn = () => {
-    console.log(userNameInput)
-    console.log(passwordInput)
-    if(dataUser.length===0){
-      alert('Wrong username or password');
-    }else{
-      alert('signIn success!!')
-    }
-    console.log("dataUser : ", dataUser);
+  const onHandleSignIn = async () => {
+    console.log("dataSignIn : ", dataSignIn);
   };
 
   const verifyAcount = (acount) => {
@@ -144,6 +195,8 @@ export default function SignIn() {
     }
     return false;
   };
+
+  console.log("dataUserLogout : ", dataSignIn);
 
   return (
     <View style={styles.contain}>
@@ -269,16 +322,6 @@ export default function SignIn() {
                 </View>
               </View>
 
-              {/* fogot password */}
-              <View
-                style={{
-                  marginTop: 10,
-                  alignItems: "flex-end",
-                }}
-              >
-                <Text>Fogot password?</Text>
-              </View>
-
               {/* login button */}
               <View
                 style={{
@@ -310,87 +353,7 @@ export default function SignIn() {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-            >
-              <Text>Or Sign Up Using</Text>
-              <View
-                style={{
-                  marginTop: 15,
-                  flexDirection: "row",
-                }}
-              >
-                {/* facebook */}
-                <TouchableOpacity
-                  style={{
-                    width: 35,
-                    height: 35,
-                    padding: 10,
-                    backgroundColor: "#3b5998",
-                    borderRadius: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    margin: 5,
-                  }}
-                >
-                  <Icon name="facebook-f" size={15} color={"white"} />
-                </TouchableOpacity>
-
-                {/* tt */}
-                <TouchableOpacity
-                  style={{
-                    width: 35,
-                    height: 35,
-                    padding: 10,
-                    backgroundColor: "#1dcaff",
-                    borderRadius: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    margin: 5,
-                  }}
-                >
-                  <Icon name="twitter" size={15} color={"white"} />
-                </TouchableOpacity>
-
-                {/* gg */}
-                <TouchableOpacity
-                  style={{
-                    width: 35,
-                    height: 35,
-                    padding: 10,
-                    backgroundColor: "#EA4355",
-                    borderRadius: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    margin: 5,
-                  }}
-                >
-                  <Icon name="google" size={15} color={"white"} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          {/* footer*/}
-          <View
-            style={{
-              flex: 2,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>Or Sign Up Using</Text>
-            <TouchableOpacity
-              style={{
-                padding: 20,
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: "500",
-                }}
-              >
-                SIGN UP
-              </Text>
-            </TouchableOpacity>
+            ></View>
           </View>
         </View>
       </View>

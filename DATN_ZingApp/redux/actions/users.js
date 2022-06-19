@@ -1,11 +1,10 @@
 import { SIGN_IN } from "../constants/types"
 
-// export const gettopartists = (isSignIn,[]) => {
-//     return {
-//       type: SIGN_IN,
-//       payload: {
-//         isSignIn:isSignIn,
-//         data:[]
-//       }
-//     }
-//   }
+export const signInAction = (isSignIn,idUser,username) => {
+    return {
+      type: SIGN_IN,
+       isSignIn,
+    idUser,
+     username
+    }
+  }

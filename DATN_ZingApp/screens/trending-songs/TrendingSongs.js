@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,23 +11,57 @@ import {
 import Song from "../home/songs/Song";
 import { request } from "../utils/Request";
 import { useDispatch, useSelector } from "react-redux";
-import {  dataSongsOfCategory } from "../../redux/actions/songs";
+import { dataSongsOfCategory } from "../../redux/actions/songs";
+import { SongContext } from "../../contexts/SongContext";
 
-export default function TrendingSongs({navigation}) {
+export default function TrendingSongs({ navigation }) {
   const dispatch = useDispatch();
   const { dataSongCategory } = useSelector((state) => state);
   const [dataCategoriesTrending, setDataCategoriesTrending] = useState([]);
 
+  const { song, songs, trendingSongs, songControl } = useContext(SongContext);
+  const {
+    index,
+    isShow,
+    isRepeat,
+    isPlaying,
+    isSliding,
+    position,
+    duration,
+
+    setPlaying,
+    setSliding,
+    setPosition,
+    setDuration,
+
+    setTrendingSongs,
+    setScreenName,
+
+    setSong,
+    setSongs,
+    setIndex,
+    setShow,
+    setRepeat,
+
+    onHandlerBack,
+    onHandlerNext,
+    onHandlerRepeat,
+    onPauseSound,
+    onPlaySound,
+    gotoPosition,
+  } = songControl;
+
   useEffect(() => {
+    setScreenName("TrendingSongs");
+
     request
       .get("/categories/getCategorisTrending")
       .then((result) => {
-        if(result?.data){
+        if (result?.data) {
           setDataCategoriesTrending(result?.data);
-        }else{
-          console.error('result.data not valid!')
+        } else {
+          console.error("result.data not valid!");
         }
-        
       })
       .catch((error) => console.error(error));
   }, []);
@@ -36,19 +70,23 @@ export default function TrendingSongs({navigation}) {
     request
       .get("/songs/get-category-songs" + (id ? "?id=" + id : "?id=1"))
       .then((result) => {
-        if(result?.data){
-          dispatch(dataSongsOfCategory(result.data));
-        }else{
-          console.error('result.data not valid!')
+        if (result?.data) {
+          // dispatch(dataSongsOfCategory(result.data));
+
+          setTrendingSongs(result?.data);
+        } else {
+          console.error("result.data not valid!");
         }
       })
       .catch((error) => console.error(error));
   };
+
   useEffect(() => {
     onHandlerGetDataSongs();
   }, []);
 
- 
+  console.log("trendingSings : ", trendingSongs);
+
   return (
     <View style={styles.container}>
       <Image
@@ -87,11 +125,16 @@ export default function TrendingSongs({navigation}) {
       </View>
 
       <FlatList
-        data={dataSongCategory}
-        renderItem={({ item,index }) => {
+        data={trendingSongs}
+        renderItem={({ item, index }) => {
           return (
             <View style={{ paddingHorizontal: 10 }}>
-              <Song item={item} navigation={navigation} index = {index} screenName = 'TrendingSongs'/>
+              <Song
+                item={item}
+                navigation={navigation}
+                indexSong={index}
+                screenName="TrendingSongs"
+              />
             </View>
           );
         }}
@@ -119,7 +162,7 @@ const styles = StyleSheet.create({
   },
   containerType: {
     marginBottom: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     padding: 10,
     flexDirection: "row",
   },

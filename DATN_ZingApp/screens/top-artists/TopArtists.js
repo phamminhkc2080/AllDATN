@@ -7,16 +7,22 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
-  SafeAreaView
+  SafeAreaView,
+  TouchableWithoutFeedback
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { request } from "../utils/Request";
+import { SongContext } from "../../contexts/SongContext";
+import { useSelector } from "react-redux";
 
 export default function TopArtists(props) {
   const [dataAllArtists, setDataAllArtists] = useState([]);
+  const { dataSongCategory, dataSongArtists, dataPlaySongs, dataSongsSearch } =
+    useSelector((state) => state);
+
   const gotoArtitsDetail = (items) => {
-    props.navigation.navigate("ArtistsDetail",items);
+    props.navigation.navigate("ArtistsDetail", items);
   };
 
   useEffect(() => {
@@ -27,38 +33,56 @@ export default function TopArtists(props) {
       })
       .catch((error) => console.error(error));
   }, []);
-  
+
   function nFormatter(num) {
     if (num >= 1000000000) {
-       return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'G';
+      return (num / 1000000000).toFixed(1).replace(/\.0$/, "") + "G";
     }
     if (num >= 1000000) {
-       return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
     }
     if (num >= 1000) {
-       return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
     }
     return num;
-}
+  }
+  const gotoResultSearch = () => {
+    props.navigation.navigate("ResultsSearchArtists");
+  };
 
+  const handleFollow = ()=>{
+     console.log('heelo');
+  }
   return (
     <SafeAreaView style={styles.constainer}>
-      {/* <View style={styles.searchSection}>
-      </View> */}
-      <Image style ={{width:'100%',height:100,}} source={require('../../assets/images/ArtistsBanner.png')}/>
+      <View style={styles.searchSection}>
+        <TouchableWithoutFeedback onPress={gotoResultSearch}>
+          <View style={styles.searchSection}>
+            <Ionicons
+              style={styles.searchIcon}
+              name="search"
+              size={20}
+              color="#000"
+            />
+            <TextInput
+              editable={false}
+              placeholder="Search...."
+              style={styles.input}
+              underlineColorAndroid="transparent"
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
 
       <FlatList
         data={dataAllArtists}
         keyExtractor={(item) => item.idArtist}
         renderItem={(item) => {
           return (
-            
             <View style={styles.containerComponent}>
               <TouchableOpacity
                 style={styles.containerArtits}
-                onPress={()=>gotoArtitsDetail(item.item)
-                
-                }
+                onPress={() => gotoArtitsDetail(item.item)}
               >
                 <View>
                   <Image
@@ -76,11 +100,13 @@ export default function TopArtists(props) {
                   >
                     {item.item.name}
                   </Text>
-                  <Text style={styles.textFollow}>{nFormatter(item.item.follows)} Follows</Text>
+                  <Text style={styles.textFollow}>
+                    {nFormatter(item.item.follows)} Follows
+                  </Text>
                 </View>
               </TouchableOpacity>
               <View style={styles.containerFollow}>
-                <TouchableOpacity style={styles.buttonFollow}>
+                <TouchableOpacity style={styles.buttonFollow} onPress={handleFollow}>
                   <Text style={styles.textFollow}>Follow</Text>
                 </TouchableOpacity>
               </View>

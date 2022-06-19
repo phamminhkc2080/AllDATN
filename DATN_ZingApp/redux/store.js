@@ -11,6 +11,7 @@ import {
   reducerSongsSearch,
   reducerTopSong,
 } from "./reducers/songs";
+import { reducerIsSignin } from "./reducers/users";
 
 const rootReducer = {
   dataTopSongs: reducerTopSong,
@@ -28,6 +29,7 @@ const rootReducer = {
   statusPlayingSound:reducerIsPlayingSound,
   storesound :reducerSound,
   statusSliding:reducerIsSliding,
-  statusRepeat:reducerIsRepeat
+  statusRepeat:reducerIsRepeat,
+  dataSignIn:reducerIsSignin
 };
 export const store = configureStore({ reducer: rootReducer });

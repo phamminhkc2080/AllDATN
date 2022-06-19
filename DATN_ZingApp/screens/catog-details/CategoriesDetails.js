@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Surface } from "react-native-paper";
 
 import {
@@ -14,19 +14,44 @@ import { useDispatch, useSelector } from "react-redux";
 import { dataSongsOfCategory, getDataPlaySongs } from "../../redux/actions/songs";
 import { request } from "../utils/Request";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { SongContext } from "../../contexts/SongContext";
 
 export default function CategoriesDetails(props) {
   const dispatch = useDispatch();
   const { dataSongCategory } = useSelector((state) => state);
 
   let data = props.route.params;
-  // const onHandlerGetData=(data)=>{
-  //   if(data){
-  //     return props.route.params;
-  //   }else{
-  //     return [];
-  //   }
-  // }
+ 
+  const { song, songs, categorySongs, songControl } = useContext(SongContext);
+  const {
+    index,
+    isShow,
+    isRepeat,
+    isPlaying,
+    isSliding,
+    position,
+    duration,
+
+    setPlaying,
+    setSliding,
+    setPosition,
+    setDuration,
+
+    setSong,
+    setSongs,
+    setIndex,
+    setShow,
+    setRepeat,
+
+    setCategorySongs,
+
+    onHandlerBack,
+    onHandlerNext,
+    onHandlerRepeat,
+    onPauseSound,
+    onPlaySound,
+    gotoPosition
+  } = songControl;
 
   useEffect(() => {
    
@@ -37,7 +62,8 @@ export default function CategoriesDetails(props) {
       )
       .then((result) => {
         if (result?.data) {
-          dispatch(dataSongsOfCategory(result.data));
+          // dispatch(dataSongsOfCategory(result.data));
+          setCategorySongs(result?.data)
         } else {
           console.error("result.data not valid!");
         }
@@ -53,7 +79,8 @@ export default function CategoriesDetails(props) {
         )
         .then((result) => {
           if (result?.data) {
-            dispatch(dataSongsOfCategory(result.data));
+            // dispatch(dataSongsOfCategory(result.data));
+            setCategorySongs(result?.data)
           } else {
             console.error("result.data not valid!");
           }
@@ -63,13 +90,21 @@ export default function CategoriesDetails(props) {
   }, []);
 
   const onHandlerPlayAll =()=>{
-      dispatch(getDataPlaySongs(dataSongCategory));
+      // dispatch(getDataPlaySongs(dataSongCategory));
+      setSongs(categorySongs)
       props.navigation.navigate('PlayerMusic');
   }
 
   const onBackNavigation = () => {
+    setShow(true);
     props.navigation.navigate("TabsNavigation");
   };
+
+  useEffect(()=>{
+    setShow(false)
+},[isShow])
+
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -100,11 +135,11 @@ export default function CategoriesDetails(props) {
 
       <Text style={styles.text2}>Songs</Text>
       <FlatList
-        data={dataSongCategory}
+        data={categorySongs}
         renderItem={({ item, index }) => {
           return (
             <View style={{ paddingHorizontal: 10 }}>
-              <Song item={item} navigation={props.navigation} index={index} screenName = 'CatgoriesDetails'/>
+              <Song item={item} navigation={props.navigation} indexSong={index} screenName = 'CatgoriesDetails'/>
             </View>
           );
         }}

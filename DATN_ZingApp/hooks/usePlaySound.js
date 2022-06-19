@@ -90,7 +90,6 @@ export default function usePlaySound(sound, setSound) {
 
   useEffect(() => {
     if (sound) {
-    console.log('hello 2')
     sound.pauseAsync()
     sound.unloadAsync()
   }
@@ -130,7 +129,6 @@ export default function usePlaySound(sound, setSound) {
 
   const onPlaySound = async () => {
     if (dataPlaySongs.length > 0) {
-      console.log('statusPlayingSound : ', statusPlayingSound)
       if (statusPlayingSound) {
         onPauseSound();
       } else {
@@ -199,7 +197,6 @@ export default function usePlaySound(sound, setSound) {
   };
 
   const onHandlerRepeat = () => {
-    console.log("isRepeat : ", statusRepeat);
     dispatch(setRepeat(!statusRepeat));
 
     sound.setIsLoopingAsync(!statusRepeat);
@@ -212,7 +209,6 @@ export default function usePlaySound(sound, setSound) {
   //     props.navigation.navigate("TabsNavigation");
   //   };
 
-  console.log("soundCurrent : ", sound);
   return [
     gotoPosition,
     onHandlerNext,
