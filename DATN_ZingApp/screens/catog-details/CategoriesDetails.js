@@ -100,9 +100,9 @@ export default function CategoriesDetails(props) {
     props.navigation.navigate("TabsNavigation");
   };
 
-  useEffect(()=>{
-    setShow(false)
-},[isShow])
+//   useEffect(()=>{
+//     setShow(false)
+// },[isShow])
 
 
   return (
@@ -118,7 +118,7 @@ export default function CategoriesDetails(props) {
         </View>
         <Surface style={styles.surface}>
           <Image
-            source={{ uri: `http://192.168.1.4:8000/${data.cover}` }}
+            source={{ uri: `https://application-mock-server.loca.lt/${data.cover}` }}
             style={styles.img}
           />
         </Surface>

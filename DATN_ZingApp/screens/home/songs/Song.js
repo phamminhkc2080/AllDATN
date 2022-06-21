@@ -1,36 +1,32 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useContext, useState } from "react";
 import {
-  View,
-  StyleSheet,
-  Text,
   Dimensions,
-  FlatList,
-  TouchableWithoutFeedback,
   Image,
   Modal,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Surface } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
-import { getDataPlaySongs, indexSong } from "../../../redux/actions/songs";
-import { request } from "../../utils/Request";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useSelector } from "react-redux";
 import { SongContext } from "../../../contexts/SongContext";
+import { request } from "../../utils/Request";
 
 const { width, height } = Dimensions.get("window");
 
 const Song = ({ item, navigation, indexSong, screenName }) => {
-  // const dispatch = useDispatch();
-  // const { dataSongCategory, dataSongArtists, dataPlaySongs, dataSongsSearch } =
-  //   useSelector((state) => state);
-  const {dataSignIn} = useSelector((state) => state);
- 
+  const { dataSignIn } = useSelector((state) => state);
+
   const {
     trendingSongs,
     artistsSongs,
     categorySongs,
     songControl,
     searchSongs,
+    songPlayList,
   } = useContext(SongContext);
   const {
     setSongs,
@@ -39,36 +35,25 @@ const Song = ({ item, navigation, indexSong, screenName }) => {
     setNewPlayList,
 
     createSound,
-    onPauseSound
+    onPauseSound,
   } = songControl;
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const handlerGetData = () => {
     if (screenName === "TrendingSongs") {
-      // dispatch(getDataPlaySongs(dataSongCategory));
-      //onPauseSound()
-      setIndex(indexSong);  
-      setSongs([]);
+      // setIndex(indexSong);
+      // setSongs([]);
       setSongs(trendingSongs);
-      // setTimeout(()=>{
-      //   createSound()
-      // },1000) 
-
-      
     } else if (screenName === "ArtistsDetail") {
-      // dispatch(getDataPlaySongs(dataSongArtists));
       setSongs(artistsSongs);
     } else if (screenName === "ResultSearch") {
-      // dispatch(getDataPlaySongs(dataSongsSearch));
-
       setSongs(searchSongs);
-      // console.log('[searchSongs[indexSong]] : ', searchSongs[indexSong])
     }
     if (screenName === "CatgoriesDetails") {
-      // dispatch(getDataPlaySongs(dataSongCategory));
       setSongs(categorySongs);
-      // console.log('songsSong : ', songs)
+    } else if (screenName === "SongPlayList"){
+      setSongs( songPlayList,);
     }
   };
   const playSong = () => {
@@ -96,26 +81,20 @@ const Song = ({ item, navigation, indexSong, screenName }) => {
     setModalVisible(false);
   };
 
-  // useEffect(() => {
-  //   console.log('screenName = ', screenName)
-  //   handlerGetData();
-  // }, [screenName]);
-
   const handlePlayMusic = () => {
-    // console.log('songsSearch : ', item)
     setModalVisible(false);
     setSongs([searchSongs[indexSong]]);
     navigation.navigate("PlayerMusic");
   };
 
-  const handleNagativeListSong = ()=>{
-    console.log('indexListSong : ', item)
+  const handleNagativeListSong = () => {
+    setModalVisible(false);
+    navigation.navigate("DataPlaylist", { item });
+  };
+  const handlerNavigateSignIn = () => {
     setModalVisible(false)
-    navigation.navigate('DataPlaylist',{item})
-  }
-  const handlerNavigateSignIn=()=>{
-    navigation.navigate('SignIn')
-  }
+    navigation.navigate("SignIn");
+  };
 
   return (
     <View>
@@ -129,7 +108,7 @@ const Song = ({ item, navigation, indexSong, screenName }) => {
           <View style={styles.modal}>
             <Surface style={styles.surface}>
               <Image
-                source={{ uri: `http://192.168.1.4:8000/${item.cover}` }}
+                source={{ uri: `https://application-mock-server.loca.lt/${item.cover}` }}
                 style={styles.modalImg}
               />
             </Surface>
@@ -146,7 +125,14 @@ const Song = ({ item, navigation, indexSong, screenName }) => {
                 <Icon name="heart" size={30} color="#ff5b77" />
                 <Text style={styles.text}>Add To Favourite</Text>
               </View>
-              <TouchableOpacity style={styles.option} onPress={dataSignIn.isSignIn ?()=>{handleNagativeListSong}  : ()=>{handlerNavigateSignIn}}>
+              <TouchableOpacity
+                style={styles.option}
+                onPress={
+                  dataSignIn.isSignIn
+                    ? handleNagativeListSong
+                    : handlerNavigateSignIn
+                }
+              >
                 <Icon name="playlist-plus" size={30} color="#000" />
                 <Text style={styles.text}>Add To Playlist</Text>
               </TouchableOpacity>
@@ -154,10 +140,10 @@ const Song = ({ item, navigation, indexSong, screenName }) => {
                 <Icon name="album" size={30} color="#000" />
                 <Text style={styles.text}>Create Album</Text>
               </View>
-              <View style={styles.option}>
+              {/* <View style={styles.option}>
                 <Icon name="download" size={30} color="#000" />
                 <Text style={styles.text}>Download</Text>
-              </View>
+              </View> */}
             </View>
           </View>
         </View>
@@ -166,7 +152,7 @@ const Song = ({ item, navigation, indexSong, screenName }) => {
       <TouchableWithoutFeedback style={styles.songContainer} onPress={playSong}>
         <View style={{ flexDirection: "row", paddingBottom: 10 }}>
           <Image
-            source={{ uri: `http://192.168.1.4:8000/${item.cover}` }}
+            source={{ uri: `https://application-mock-server.loca.lt/${item.cover}` }}
             style={styles.img}
           />
           <View style={styles.dataContainer}>
@@ -176,7 +162,7 @@ const Song = ({ item, navigation, indexSong, screenName }) => {
           <View style={styles.iconContainer}>
             <Icon
               name="download"
-              color="gray"
+              color="#f2f2f2"
               size={30}
               style={{ marginRight: 10 }}
             />

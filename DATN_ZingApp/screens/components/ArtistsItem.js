@@ -37,7 +37,7 @@ export default function ArtistsItem({ item, index, screenName }) {
       <TouchableWithoutFeedback style={styles.songContainer} onPress={handleNavigationArtistsDetail}>
         <View style={{ flexDirection: "row", paddingBottom: 10 }}>
           <Image
-            source={{ uri: `http://192.168.1.4:8000/${item?.image}` }}
+            source={{ uri: `https://application-mock-server.loca.lt/${item?.image}` }}
             style={styles.img}
           />
           <View style={styles.dataContainer}>

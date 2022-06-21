@@ -145,11 +145,12 @@ const PlayerMusic = (props) => {
 
         <Animated.View style={styles.mainImageWrapper}>
           <View style={[styles.imageWrapper, styles.elevation]}>
+          {/* <View style={[styles.imageWrapper, styles.elevation]}> */}
             {songs[index] ? (
               <Image
                 style={styles.musicImage}
                 source={{
-                  uri: `http://192.168.1.4:8000/${songs[index]?.cover}`,
+                  uri: `https://application-mock-server.loca.lt/${songs[index]?.cover}`,
                 }}
               />
             ) : (
@@ -213,7 +214,7 @@ const PlayerMusic = (props) => {
         {/* music controls */}
         <View style={styles.musicControlsContainer}>
           <TouchableOpacity>
-            <Ionicons name="shuffle-outline" size={35} color="#FFD369" />
+            <Ionicons name="shuffle-outline" size={35} color="#ccc" />
           </TouchableOpacity>
 
           {index <= 0 ? (

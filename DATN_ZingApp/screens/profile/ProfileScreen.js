@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signInAction } from "../../redux/actions/users";
+import { SongContext } from "../../contexts/SongContext";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -24,6 +25,13 @@ export default function ProfileScreen() {
   const { dataSignIn } = useSelector((state) => state);
 
   const navigation = useNavigation();
+
+  const { songControl } = useContext(SongContext);
+  const {
+    isShow,
+
+    setShow,
+  } = songControl;
 
   const checkButton = (input) => {
     if (input === "Signin") {

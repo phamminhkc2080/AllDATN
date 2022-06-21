@@ -32,29 +32,30 @@ export default function PlaylistItem({ item, data }) {
   };
 
   const handlerNavigatePlayList = ()=>{
-    if (item?.idPlaylist && dataSignIn?.idUser) {
-      request
-        .get(
-          "/songs/get-songs-playlist" +
-            (item.idPlaylist && dataSignIn.idUser
-              ? "?idUser=" +
-                dataSignIn.idUser +
-                "&&idPlaylist=" +
-                item.idPlaylist
-              : "?idUser=&&idPlaylist=")
-        )
-        .then((result) => {
-          if (result?.data) {
-            // dispatch(dataSongsOfCategory(result.data));
-            setDataSong(result.data);
-          } else {
-            console.error("result.data not valid!");
-          }
-        })
-        .catch((error) => console.error(error));
-    }
+    // if (item?.idPlaylist && dataSignIn?.idUser) {
+    //   request
+    //     .get(
+    //       "/songs/get-songs-playlist" +
+    //         (item.idPlaylist && dataSignIn.idUser
+    //           ? "?idUser=" +
+    //             dataSignIn.idUser +
+    //             "&&idPlaylist=" +
+    //             item.idPlaylist
+    //           : "?idUser=&&idPlaylist=")
+    //     )
+    //     .then((result) => {
+    //       if (result?.data) {
+    //         // dispatch(dataSongsOfCategory(result.data));
+    //         setDataSong(result.data);
+    //       } else {
+    //         console.error("result.data not valid!");
+    //       }
+    //     })
+    //     .catch((error) => console.error(error));
+    // }
+    navigation.navigate('SongsPlaylist',{item : item.idPlaylist})
   }
-  // console.log("itemSongPL : ", dataSong);
+  console.log("itemSongPL : ", dataSong);
   return (
     <View
       style={{
@@ -71,7 +72,7 @@ export default function PlaylistItem({ item, data }) {
         <TouchableOpacity onPress={handlerNavigatePlayList}>
         <Image
           style={{ width: 100, height: 100 }}
-          source={{ uri: `http://192.168.1.4:8000/${item.cover}` }}
+          source={{ uri: `https://application-mock-server.loca.lt/${item.cover}` }}
         />
         </TouchableOpacity>
        

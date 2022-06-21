@@ -28,6 +28,13 @@ export default function SignIn() {
   const [isUserName, setIsUserName] = useState(true);
   const [isPassword, setIsPassword] = useState(true);
 
+  const { songControl } = useContext(SongContext);
+  const {
+    isShow,
+
+    setShow,
+  } = songControl;
+
   const onChangedUsername = (value) => {
     setUserNameInput(value);
     setIsUserName(verifyAcount(value));
@@ -49,7 +56,7 @@ export default function SignIn() {
 
         if (result?.data) {
           // onHandleSignIn();
-          if (result.data.length===0) {
+          if (result.data.length === 0) {
             alert("Wrong username or password");
           } else {
             dispatch(
@@ -61,7 +68,6 @@ export default function SignIn() {
             );
             navigation.navigate("TabsNavigation");
           }
-         
         }
       })
       .catch((error) => {

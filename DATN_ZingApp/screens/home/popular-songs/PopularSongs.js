@@ -149,14 +149,14 @@ export default function PopularSongs(props) {
     <View style={styles.container}>
       <View style={styles.containerTitle}>
         <Text style={styles.title}>{props.title}</Text>
-        <View style={styles.containerIconList}>
+        {/* <View style={styles.containerIconList}>
           <Icon
             style={styles.iconTitle}
             name="playlist-play"
             size={30}
             color="black"
           />
-        </View>
+        </View> */}
       </View>
 
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -170,7 +170,7 @@ export default function PopularSongs(props) {
               <Surface style={styles.surface}>
                 <ImageBackground
                   source={{
-                    uri: `http://192.168.1.4:8000/${item.cover || item.image}`,
+                    uri: `https://application-mock-server.loca.lt/${item.cover || item.image}`,
                   }}
                   style={styles.img}
                 ></ImageBackground>

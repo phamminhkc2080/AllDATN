@@ -10,8 +10,6 @@ import {
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 
-
-
 export default function HeaderHome(props) {
   const gotoResultSearch = () => {
     props.navigation.navigate("ResultsSearch");
@@ -45,13 +43,11 @@ export default function HeaderHome(props) {
               style={styles.input}
               underlineColorAndroid="transparent"
             />
-            
           </View>
         </TouchableWithoutFeedback>
 
-        <Feather name="settings" size={30} color="black" />
+        {/* <Feather name="settings" size={30} color="black" /> */}
       </View>
-      
     </SafeAreaView>
   );
 }

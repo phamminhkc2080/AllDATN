@@ -29,7 +29,7 @@ export default function ResultsSearchArtists({ navigation }) {
     request
       .get(
         "/artists/get-search-artists" +
-          (textSearch ? "?search=" + textSearch : "?search=")
+          (text ? "?search=" + text : "?search=")
       )
       .then((result) => {
         if (result?.data) {
@@ -41,9 +41,7 @@ export default function ResultsSearchArtists({ navigation }) {
       .catch((error) => console.error(error));
   };
 
-  useEffect(() => {
-    handlerTextSearch();
-  }, [textSearch]);
+
 
   return (
     <View style={styles.container}>

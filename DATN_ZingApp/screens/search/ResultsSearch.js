@@ -21,35 +21,9 @@ const { width, height } = Dimensions.get("screen");
 export default function ResultsSearch({ navigation }) {
   const [textSearch, setTextSearch] = useState();
 
-  const { song, songs, searchSongs, songControl } = useContext(SongContext);
+  const {  searchSongs, songControl } = useContext(SongContext);
   const {
-    index,
-    isShow,
-    isRepeat,
-    isPlaying,
-    isSliding,
-    position,
-    duration,
-
-    setPlaying,
-    setSliding,
-    setPosition,
-    setDuration,
-
-    setSong,
-    setSongs,
-    setIndex,
-    setShow,
-    setRepeat,
-
     setSearchSongs,
-
-    onHandlerBack,
-    onHandlerNext,
-    onHandlerRepeat,
-    onPauseSound,
-    onPlaySound,
-    gotoPosition,
   } = songControl;
 
 
@@ -60,7 +34,7 @@ export default function ResultsSearch({ navigation }) {
     request
       .get(
         "/songs/get-songs-search" +
-          (textSearch ? "?search=" + textSearch : "?search=")
+          (text ? "?search=" + text : "?search=")
       )
       .then((result) => {
         if (result?.data) {
@@ -71,9 +45,7 @@ export default function ResultsSearch({ navigation }) {
       })
       .catch((error) => console.error(error));
   };
-  useEffect(() => {
-    handlerTextSearch();
-  }, [textSearch]);
+
   return (
     <View style={styles.container}>
       <SafeAreaView>

@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
+  ScrollView
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -61,9 +62,9 @@ export default function ArtistsDetail(props) {
       .catch((error) => console.error(error));
   }, []);
 
-  useEffect(() => {
-    setShow(false);
-  }, [isShow]);
+  // useEffect(() => {
+  //   setShow(false);
+  // }, [isShow]);
 
   const onHanderBack = () => {
     setShow(true);
@@ -91,12 +92,13 @@ export default function ArtistsDetail(props) {
   // console.log('artistsSongNgoai : ',artistsSongs);
 
   return (
-    <View style={styles.container}>
+   
+    <ScrollView style={styles.container}>
       <View>
         <Image
           resizeMode="cover"
           style={styles.imgArtists}
-          source={{ uri: `http://192.168.1.4:8000/${dataAritsts.image}` }}
+          source={{ uri: `https://application-mock-server.loca.lt/${dataAritsts.image}` }}
         />
         <LinearGradient
           colors={["rgba(0,0,0,0.1)", "black"]}
@@ -151,14 +153,7 @@ export default function ArtistsDetail(props) {
       </View>
       <View style={styles.containerTitle}>
         <Text style={styles.title}>Songs</Text>
-        <View style={styles.containerIconList}>
-          <Icon
-            style={styles.iconTitle}
-            name="playlist-play"
-            size={30}
-            color="black"
-          />
-        </View>
+       
       </View>
       <View style={{ paddingLeft: 15 }}>
         <FlatList
@@ -176,7 +171,7 @@ export default function ArtistsDetail(props) {
           }}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

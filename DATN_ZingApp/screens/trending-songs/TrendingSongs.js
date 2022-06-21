@@ -111,7 +111,7 @@ export default function TrendingSongs({ navigation }) {
             </TouchableOpacity>
           </View>
         ))}
-        <View style={styles.containerType}>
+        {/* <View style={styles.containerType}>
           <TouchableOpacity style={styles.btnType}>
             <Text
               numberOfLines={1}
@@ -121,7 +121,7 @@ export default function TrendingSongs({ navigation }) {
               Show All
             </Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
 
       <FlatList

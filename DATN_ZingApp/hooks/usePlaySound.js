@@ -32,13 +32,13 @@ export default function usePlaySound(sound, setSound) {
 
   async function createSound(songs, index, callback) {
     const { sound: soundAsyncTemp } = await Audio.Sound.createAsync({
-      uri: `http://192.168.1.4:8000/${songs[index].dir}`,
+      uri: `https://application-mock-server.loca.lt/${songs[index].dir}`,
     });
 
     setSound(soundAsyncTemp)
     // sound =  soundAsync;
     // const { sound } = await Audio.Sound.createAsync({
-    //   uri: `http://192.168.1.4:8000/${songs[index].dir}`,
+    //   uri: `https://application-mock-server.loca.lt/${songs[index].dir}`,
     // });
 
     // setSound(sound);

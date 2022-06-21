@@ -13,6 +13,7 @@ const SongProvider = ({ children }) => {
   const [trendingSongs, setTrendingSongs] = useState([]);
   const [categorySongs, setCategorySongs] = useState([]);
   const [searchSongs, setSearchSongs] = useState([]);
+  const [songPlayList,setSongPlaylist]= useState([]);
 
   // artistsSongs
 
@@ -25,9 +26,12 @@ const SongProvider = ({ children }) => {
   const [screenName, setScreenName] = useState();
   const [isNewPlayList, setNewPlayList] = useState(false);
 
-  async function createSound(callback) {
+  async function createSound(callback, newIndex) {
+    console.log("newIndex : ", newIndex);
     const { sound: soundAsyncTemp } = await Audio.Sound.createAsync({
-      uri: `http://192.168.1.4:8000/${songs[index].dir}`,
+      uri: `https://application-mock-server.loca.lt/${
+        songs[typeof newIndex !== "undefined" ? newIndex : index].dir
+      }`,
     });
     soundAsyncTemp.setVolumeAsync(0.2);
     setSong(soundAsyncTemp);
@@ -41,6 +45,16 @@ const SongProvider = ({ children }) => {
     return await song?.pauseAsync();
   };
 
+  const createThenPlay = (newIndex) => {
+    if (typeof newIndex !== "undefined") {
+      setIndex(newIndex);
+    }
+    createSound((newSong) => {
+      newSong.playAsync();
+      setPlaying(true);
+    }, newIndex);
+  };
+
   const onHandlerNext = () => {
     if (index >= songs.length - 1) {
       return;
@@ -49,11 +63,7 @@ const SongProvider = ({ children }) => {
       song.unloadAsync();
     }
 
-    setIndex((i) => i + 1);
-    createSound((newSong) => {
-      newSong.playAsync();
-    });
-    setPlaying(true);
+    createThenPlay(index + 1);
   };
 
   const onHandlerBack = () => {
@@ -64,12 +74,7 @@ const SongProvider = ({ children }) => {
       song.unloadAsync();
     }
 
-    setIndex((i) => i - 1);
-    createSound((newSong) => {
-      newSong.playAsync();
-    });
-
-    setPlaying(true);
+    createThenPlay(index - 1);
   };
 
   const onPlaySound = async () => {
@@ -80,9 +85,7 @@ const SongProvider = ({ children }) => {
         if (song) {
           await song.playAsync();
         } else {
-          createSound((newSong) => {
-            newSong.playAsync();
-          });
+          createThenPlay();
         }
       }
     }
@@ -100,7 +103,10 @@ const SongProvider = ({ children }) => {
   // }, []);
 
   useEffect(() => {
+    console.log("song : ", song);
+
     if (song && isPlaying && !isSliding) {
+      console.log("hello!!");
       let interval = setInterval(() => {
         song.setOnPlaybackStatusUpdate((result) => {
           setDuration(result.durationMillis);
@@ -109,27 +115,14 @@ const SongProvider = ({ children }) => {
             if (result.isLooping) {
               return;
             }
-
-            // if (index < songs.length - 1) {
-            //   dispatch(isPlayingSound(false));
-            //   dispatch(indexSong(index + 1));
-            //   dispatch(setPositionSound(0));
-            //   createSound(songs, index + 1, (newSong) => {
-            //     newSong.playAsync();
-            //   });
-            //   dispatch(isPlayingSound(true));
-            // } else {
-            //   dispatch(setPositionSound(0));
-            //   dispatch(isPlayingSound(false));
-            // }
-
+            console.log("index : ", index);
             if (index < songs.length - 1) {
               setPlaying(false);
-              setIndex((i) => i + 1);
               setPosition(0);
-              createSound((newSong) => newSong.playAsync());
+              createThenPlay(index + 1);
               setPlaying(true);
             } else {
+              console.log("WoW!!");
               setPosition(0);
               setPlaying(false);
             }
@@ -146,25 +139,27 @@ const SongProvider = ({ children }) => {
   const playSongs = () => {
     if (songs.length > 0) {
       if (!song) {
-        createSound();
+        console.log("song creating...");
+        createThenPlay(index);
       } else {
         song?.getStatusAsync().then((response) => {
           if (response?.isLoaded) {
             song.stopAsync().then(() =>
               song.unloadAsync().then(() => {
-                song
-                  .loadAsync({
-                    uri: `http://192.168.1.4:8000/${songs[index].dir}`,
-                  })
+                createThenPlay(index);
+                console.log('helloooo')
 
-                  .then((response) => {
-                    response.sound?.setVolumeAsync(0.2);
-                    setSong(response.sound);
-                    if (isShow) {
-                      response.sound?.setPositionAsync(position)
-                    }
-                    onPlaySound();
-                  });
+                // Audio.Sound.createAsync({
+                //   uri: `https://application-mock-server.loca.lt/${songs[index].dir}`,
+                // })
+                //   .then((response) => {
+                //     response.sound?.setVolumeAsync(0.2);
+                //     console.log("responSound : ", response.sound);
+                //     setSong(response.sound);
+
+                //     console.log("setPlaying(true)");
+                //     setPlaying(true);
+                //   });
               })
             );
           }
@@ -178,24 +173,18 @@ const SongProvider = ({ children }) => {
   }, [songs, index]);
 
   const gotoPosition = (pos) => {
-    //const checkPlaying = isPlaying;
-
     if (isPlaying) {
-      // dispatch(isPlayingSound(false));
       setPlaying(false);
     }
 
-    //dispatch(setPositionSound(pos));
     setPosition(pos);
 
     if (isPlaying) {
       song.playFromPositionAsync(pos);
-      // dispatch(isPlayingSound(true));
       setPlaying(true);
     } else {
       song.setPositionAsync(pos);
     }
-    // dispatch(setSliding(false));
     setSliding(false);
   };
 
@@ -249,6 +238,7 @@ const SongProvider = ({ children }) => {
         categorySongs,
         screenName,
         searchSongs,
+        songPlayList,
 
         songControl: {
           index,
@@ -272,6 +262,7 @@ const SongProvider = ({ children }) => {
 
           setScreenName,
           setNewPlayList,
+          setSongPlaylist,
 
           setArtistsSongs,
           setTrendingSongs,

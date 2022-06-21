@@ -88,7 +88,7 @@ export default function TopArtists(props) {
                   <Image
                     style={styles.imgArtists}
                     source={{
-                      uri: `http://192.168.1.4:8000/${item.item.image}`,
+                      uri: `https://application-mock-server.loca.lt/${item.item.image}`,
                     }}
                   />
                 </View>
